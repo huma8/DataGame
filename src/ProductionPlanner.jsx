@@ -470,7 +470,7 @@ const ProductionPlanner = () => {
             {/* Total Production Summary */}
             <div className="mt-6 border-t border-white/20 pt-4">
               <h3 className="text-lg font-bold text-white mb-3">📊 Toplam Üretim Özeti</h3>
-              <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+              <div className="bg-white/5 border border-white/10 rounded-lg p-3 max-h-[400px] overflow-y-auto pr-2">
                 {Object.keys(totalProductions).length === 0 ? (
                   <p className="text-gray-400 text-sm">Henüz üretim yapılmadı</p>
                 ) : (
