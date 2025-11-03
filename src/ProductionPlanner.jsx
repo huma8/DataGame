@@ -10,6 +10,7 @@ const ProductionPlanner = () => {
   const [totalProductions, setTotalProductions] = useState({});
   const [detailedBreakdown, setDetailedBreakdown] = useState([]);
   const [productionDetails, setProductionDetails] = useState({});
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   // Initialize the production data when the component mounts
   useEffect(() => {
@@ -17,9 +18,11 @@ const ProductionPlanner = () => {
       .then(response => response.text())
       .then(text => {
         initializeData(text);
+        setIsLoading(false); // Set loading to false after data is loaded
       })
       .catch(error => {
         console.error('Error loading malzemeler.txt:', error);
+        setIsLoading(false); // Still set loading to false in case of error
       });
   }, []);
 
@@ -375,7 +378,8 @@ const ProductionPlanner = () => {
               {filteredItems.map((item, idx) => (
                 <div
                   key={idx}
-                  className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-all cursor-pointer"
+                  className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-all cursor-pointer card-hover-effect stagger-item"
+                  style={{ animationDelay: `${idx * 0.02}s` }}
                   onClick={() => addToQueue(item, 1)}
                 >
                   <div className="flex items-center justify-between">
@@ -457,7 +461,7 @@ const ProductionPlanner = () => {
                   productionQueue.map((item) => (
                     <div
                       key={item.id}
-                      className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-all"
+                      className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-all card-hover-effect"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
