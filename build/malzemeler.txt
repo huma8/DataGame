@@ -15,7 +15,7 @@ Network Component: 6h, Developer(beginner), -
 Database Component: 4h, Developer(beginner), -
 Video Component: 14h, Developer(beginner), -
 Semantic Component: 3h, Developer(intermediate), -
-Encrpytion Component: 8h, Developer(intermediate), -
+Encryption Component: 8h, Developer(intermediate), -
 Filesystem Component: 4h, Developer(intermediate), -
 Smtp Component: 8h, Developer(intermediate), -
 i18n Component: 4h, Developer(expert), -
@@ -30,7 +30,7 @@ Storage Module: 8h, Lead Developer(beginner), 1 Filesystem Component + 1 Backend
 Content Management Module: 37h, Lead Developer(beginner), 1 Frontend Module + 1 Input Module + 1 Backend Module
 Video Playback Module: 45h, Lead Developer(beginner), 1 Video Component + 1 Frontend Module + 1 Backend Module
 Seo Module: 24h, Lead Developer(intermediate), 1 Frontend Module + 1 Semantic Component
-Authentication Module: 22h, Lead Developer(intermediate), 1 Database Component + 1 Encrpytion Component + 1 Backend Module
+Authentication Module: 22h, Lead Developer(intermediate), 1 Database Component + 1 Encryption Component + 1 Backend Module
 Email Module: 12h, Lead Developer(intermediate), 1 Smtp Component + 1 Backend Component
 Database Layer: 14h, Lead Developer(intermediate), 1 Database Component + 1 Backend Component + 1 Network Component
 Notification Module: 18h, Lead Developer(intermediate), 1 UI Component + 1 Backend Component + 1 Email Module

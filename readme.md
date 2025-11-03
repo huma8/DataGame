@@ -88,7 +88,7 @@ Toplam Üretim Listesi:
 - Network Component: 2
 - Database Component: 2
 - Compression Component: 2
-- Encrpytion Component: 1
+- Encryption Component: 1
 
 Yani bu liste tam üretim sırasını gösterir — her ne kadar alt bileşenlerin bir kısmı ham madde olsa da — “bu zincir boyunca neler üretilecek” sorusuna yanıt verir.
 

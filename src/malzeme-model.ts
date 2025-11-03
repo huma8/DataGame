@@ -110,7 +110,7 @@ const malzemeler: Malzeme[] = [
     gerekliMalzemeler: []
   },
   {
-    isim: "Encrpytion Component",
+    isim: "Encryption Component",
     uretimSuresi: 8,
     uretici: "Developer(intermediate)",
     gerekliMalzemeler: []
@@ -225,7 +225,7 @@ const malzemeler: Malzeme[] = [
     uretici: "Lead Developer(intermediate)",
     gerekliMalzemeler: [
       { isim: "Database Component", miktar: 1 },
-      { isim: "Encrpytion Component", miktar: 1 },
+      { isim: "Encryption Component", miktar: 1 },
       { isim: "Backend Module", miktar: 1 }
     ]
   },
