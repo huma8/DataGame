@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Plus, Trash2, Clock, User, Package, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Search, Plus, Minus, Trash2, Clock, User, Package, ChevronDown, ChevronUp } from 'lucide-react';
+import { initializeData, cikarHammaddeler, cikarToplamUretimler, toplamUretimSuresi, uretimZinciri } from './uretim-hesaplama.js';
 
 const ProductionPlanner = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -7,6 +8,21 @@ const ProductionPlanner = () => {
   const [productionQueue, setProductionQueue] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
   const [quantity, setQuantity] = useState(1);
+  const [totalProductions, setTotalProductions] = useState({});
+  const [detailedBreakdown, setDetailedBreakdown] = useState([]);
+  const [productionDetails, setProductionDetails] = useState({});
+
+  // Initialize the production data when the component mounts
+  useEffect(() => {
+    fetch('/malzemeler.txt')
+      .then(response => response.text())
+      .then(text => {
+        initializeData(text);
+      })
+      .catch(error => {
+        console.error('Error loading malzemeler.txt:', error);
+      });
+  }, []);
 
   const items = [
     // Components - Developer
@@ -67,19 +83,147 @@ const ProductionPlanner = () => {
     });
   }, [searchTerm, selectedCategory]);
 
-  const addToQueue = (item) => {
-    setProductionQueue([...productionQueue, { ...item, id: Date.now() }]);
+  // Find item by name in the items array
+  const findItem = (name) => {
+    return items.find(item => item.name === name);
+  };
+
+  // Function to get detailed breakdown of resources needed for an item
+  const getDetailedBreakdown = (item, qty = 1) => {
+    const breakdown = [];
+    
+    // Add how the main item breaks down
+    if (item.resources && item.resources.length > 0) {
+      const resourceBreakdown = item.resources.map(resource => resource).join(', ');
+      breakdown.push(`${qty} ${item.name} → ${resourceBreakdown}`);
+      
+      // Recursively get breakdown for each resource
+      for (const resource of item.resources) {
+        const [count, resourceName] = resource.split(' ');
+        const resourceCount = parseInt(count) * qty;
+        const resourceItem = findItem(resourceName);
+        
+        if (resourceItem) {
+          const subBreakdown = getDetailedBreakdown(resourceItem, resourceCount);
+          // Add sub-breakdown with indentation
+          for (const subLine of subBreakdown) {
+            breakdown.push(`  ${subLine}`);
+          }
+        } else {
+          // If resource is not found in our items list, just add it directly
+          breakdown.push(`  ${resourceCount} ${resourceName}`);
+        }
+      }
+    } else {
+      // If no resources, just add the item
+      breakdown.push(`${qty} ${item.name}`);
+    }
+    
+    return breakdown;
+  };
+
+  const addToQueue = (item, qty = 1) => {
+    const newItems = [];
+    for (let i = 0; i < qty; i++) {
+      newItems.push({ ...item, id: Date.now() + i });
+    }
+    setProductionQueue([...productionQueue, ...newItems]);
+    
+    // Update total production with all required resources calculated recursively
+    setTotalProductions(prev => {
+      const updated = { ...prev };
+      
+      // Use the new calculation function from uretim-hesaplama.ts
+      const allResources = cikarToplamUretimler(item.name, qty);
+      
+      // Add all resources to the total
+      for (const [resourceName, count] of Object.entries(allResources)) {
+        updated[resourceName] = (updated[resourceName] || 0) + count;
+      }
+      
+      return updated;
+    });
+    
+    // Update production details with new information
+    setProductionDetails(prev => {
+      const updated = { ...prev };
+      
+      // Add calculation details for the newly added item
+      updated[item.name] = {
+        totalTime: toplamUretimSuresi(item.name, qty),
+        rawMaterials: cikarHammaddeler(item.name, qty),
+        productionChain: uretimZinciri(item.name)
+      };
+      
+      return updated;
+    });
+    
+    // Update detailed breakdown by recalculating from the full queue
+    setDetailedBreakdown(calculateAllBreakdowns());
   };
 
   const removeFromQueue = (id) => {
-    setProductionQueue(productionQueue.filter(item => item.id !== id));
+    const removedItem = productionQueue.find(item => item.id === id);
+    if (removedItem) {
+      setProductionQueue(productionQueue.filter(item => item.id !== id));
+      
+      // Update total production by subtracting the removed item and all its sub-resources
+      setTotalProductions(prev => {
+        const updated = { ...prev };
+        
+        // Use the new calculation function from uretim-hesaplama.ts
+        const allResources = cikarToplamUretimler(removedItem.name, 1);
+        
+        // Subtract all resources from the total
+        for (const [resourceName, count] of Object.entries(allResources)) {
+          if (updated[resourceName]) {
+            updated[resourceName] = Math.max(0, updated[resourceName] - count);
+            if (updated[resourceName] === 0) {
+              delete updated[resourceName];
+            }
+          }
+        }
+        
+        return updated;
+      });
+      
+      // Update detailed breakdown by removing the related entries
+      // For simplicity, we'll just recalculate the entire breakdown from the current production queue
+      setDetailedBreakdown(calculateAllBreakdowns());
+    }
+  };
+  
+  // Calculate all breakdowns from the current production queue
+  const calculateAllBreakdowns = () => {
+    const allBreakdowns = [];
+    
+    // Group items by name to calculate totals
+    const itemCounts = {};
+    for (const item of productionQueue) {
+      itemCounts[item.name] = (itemCounts[item.name] || 0) + 1;
+    }
+    
+    // Calculate breakdown for each unique item
+    for (const [itemName, count] of Object.entries(itemCounts)) {
+      const item = findItem(itemName);
+      if (item) {
+        const breakdown = getDetailedBreakdown(item, count);
+        // Add a separator or title for each main item
+        allBreakdowns.push(`--- ${count}x ${itemName} ---`);
+        allBreakdowns.push(...breakdown);
+        allBreakdowns.push(''); // Empty line for readability
+      }
+    }
+    
+    return allBreakdowns;
   };
 
   const toggleExpand = (id) => {
     setExpandedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  const totalTime = productionQueue.reduce((sum, item) => sum + item.time, 0);
+  // Calculate total time using the production details state
+  const totalTime = Object.values(productionDetails).reduce((sum, details) => sum + details.totalTime, 0);
 
   const getWorkerColor = (worker) => {
     if (worker.includes('Designer')) return 'bg-purple-500';
@@ -183,12 +327,33 @@ const ProductionPlanner = () => {
                         </div>
                       )}
                     </div>
-                    <button
-                      onClick={() => addToQueue(item)}
-                      className="ml-4 p-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all"
-                    >
-                      <Plus size={20} />
-                    </button>
+                    <div className="flex items-center gap-2 ml-4">
+                      <button
+                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <input
+                        type="number"
+                        min="1"
+                        value={quantity}
+                        onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                        className="w-16 text-center bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      />
+                      <button
+                        onClick={() => setQuantity(quantity + 1)}
+                        className="p-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all"
+                      >
+                        <Plus size={16} />
+                      </button>
+                      <button
+                        onClick={() => addToQueue(item, quantity)}
+                        className="p-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all ml-2"
+                      >
+                        <Plus size={20} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -212,7 +377,7 @@ const ProductionPlanner = () => {
               </div>
             </div>
 
-            <div className="space-y-2 max-h-[500px] overflow-y-auto pr-2">
+            <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
               {productionQueue.length === 0 ? (
                 <div className="text-center text-gray-400 py-8">
                   <Package size={48} className="mx-auto mb-2 opacity-50" />
@@ -247,6 +412,66 @@ const ProductionPlanner = () => {
                   </div>
                 ))
               )}
+            </div>
+
+            {/* Total Production Summary */}
+            <div className="mt-6 border-t border-white/20 pt-4">
+              <h3 className="text-lg font-bold text-white mb-3">📊 Toplam Üretim Özeti</h3>
+              <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                {Object.keys(totalProductions).length === 0 ? (
+                  <p className="text-gray-400 text-sm">Henüz üretim yapılmadı</p>
+                ) : (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-white text-sm">Detaylı Kırılım:</h4>
+                    <div className="bg-gray-800/50 rounded p-2 text-xs max-h-40 overflow-y-auto">
+                      {detailedBreakdown.map((line, index) => (
+                        <div key={index} className="text-gray-200 font-mono">
+                          {line}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="border-t border-white/20 pt-2 mt-2">
+                      <h4 className="font-semibold text-white text-sm">Toplam Üretim:</h4>
+                      <div className="space-y-1 mt-1">
+                        {Object.entries(totalProductions).map(([item, count]) => (
+                          <div key={item} className="flex justify-between text-sm">
+                            <span className="text-gray-300">{item}:</span>
+                            <span className="text-white font-medium">{count}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="border-t border-white/20 mt-2 pt-2">
+                        <div className="flex justify-between font-bold text-white">
+                          <span>Toplam Malzeme:</span>
+                          <span>{Object.values(totalProductions).reduce((sum, count) => sum + count, 0)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Additional Production Details */}
+                    <div className="border-t border-white/20 pt-2 mt-2">
+                      <h4 className="font-semibold text-white text-sm">Üretim Detayları:</h4>
+                      <div className="space-y-1 mt-1">
+                        {Object.entries(productionDetails).map(([itemName, details]) => (
+                          <div key={itemName} className="mt-2">
+                            <div className="text-xs text-purple-300 font-semibold">{itemName}</div>
+                            <div className="text-xs text-gray-300">Toplam Süre: <span className="text-white">{details.totalTime} saat</span></div>
+                            <div className="text-xs text-gray-300">Ham Maddeler:</div>
+                            <div className="text-xs text-gray-400 ml-2">
+                              {Object.entries(details.rawMaterials).map(([material, count], idx) => (
+                                <div key={idx}>{material}: {count}</div>
+                              ))}
+                            </div>
+                            <div className="text-xs text-gray-300">Üretim Zinciri: <span className="text-white">{details.productionChain.join(' → ')}</span></div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
