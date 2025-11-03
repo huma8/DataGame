@@ -133,7 +133,7 @@ const ProductionPlanner = () => {
     setTotalProductions(prev => {
       const updated = { ...prev };
       
-      // Use the new calculation function from uretim-hesaplama.ts
+      // Use the new calculation function from uretim-hesaplama.js
       const allResources = cikarToplamUretimler(item.name, qty);
       
       // Add all resources to the total
@@ -149,11 +149,21 @@ const ProductionPlanner = () => {
       const updated = { ...prev };
       
       // Add calculation details for the newly added item
-      updated[item.name] = {
-        totalTime: toplamUretimSuresi(item.name, qty),
-        rawMaterials: cikarHammaddeler(item.name, qty),
-        productionChain: uretimZinciri(item.name)
-      };
+      if (updated[item.name]) {
+        // If the item already exists, we need to aggregate the values
+        updated[item.name] = {
+          totalTime: updated[item.name].totalTime + toplamUretimSuresi(item.name, qty),
+          rawMaterials: aggregateRawMaterials(updated[item.name].rawMaterials, cikarHammaddeler(item.name, qty)),
+          productionChain: updated[item.name].productionChain // Keep existing chain since it doesn't change by quantity
+        };
+      } else {
+        // If new item, initialize it
+        updated[item.name] = {
+          totalTime: toplamUretimSuresi(item.name, qty),
+          rawMaterials: cikarHammaddeler(item.name, qty),
+          productionChain: uretimZinciri(item.name)
+        };
+      }
       
       return updated;
     });
@@ -171,7 +181,7 @@ const ProductionPlanner = () => {
       setTotalProductions(prev => {
         const updated = { ...prev };
         
-        // Use the new calculation function from uretim-hesaplama.ts
+        // Use the new calculation function from uretim-hesaplama.js
         const allResources = cikarToplamUretimler(removedItem.name, 1);
         
         // Subtract all resources from the total
@@ -187,10 +197,43 @@ const ProductionPlanner = () => {
         return updated;
       });
       
+      // Update production details by recalculating based on the current queue
+      setProductionDetails(prev => {
+        const updated = {};
+        const itemCounts = {};
+        
+        // Count occurrences of each item in the current queue
+        for (const item of productionQueue) {
+          if (item.id !== id) { // Skip the removed item
+            itemCounts[item.name] = (itemCounts[item.name] || 0) + 1;
+          }
+        }
+        
+        // Recalculate details for each unique item in the queue
+        for (const [itemName, count] of Object.entries(itemCounts)) {
+          updated[itemName] = {
+            totalTime: toplamUretimSuresi(itemName, count),
+            rawMaterials: cikarHammaddeler(itemName, count),
+            productionChain: uretimZinciri(itemName)
+          };
+        }
+        
+        return updated;
+      });
+      
       // Update detailed breakdown by removing the related entries
       // For simplicity, we'll just recalculate the entire breakdown from the current production queue
       setDetailedBreakdown(calculateAllBreakdowns());
     }
+  };
+  
+  // Helper function to aggregate raw materials
+  const aggregateRawMaterials = (existing, newMaterials) => {
+    const result = { ...existing };
+    for (const [material, count] of Object.entries(newMaterials)) {
+      result[material] = (result[material] || 0) + count;
+    }
+    return result;
   };
   
   // Calculate all breakdowns from the current production queue
@@ -222,8 +265,19 @@ const ProductionPlanner = () => {
     setExpandedItems(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  // Calculate total time using the production details state
-  const totalTime = Object.values(productionDetails).reduce((sum, details) => sum + details.totalTime, 0);
+  // Calculate total time by summing the time for each unique item in the queue
+  const totalTime = (() => {
+    const itemCounts = {};
+    for (const item of productionQueue) {
+      itemCounts[item.name] = (itemCounts[item.name] || 0) + 1;
+    }
+    
+    let total = 0;
+    for (const [itemName, count] of Object.entries(itemCounts)) {
+      total += toplamUretimSuresi(itemName, count);
+    }
+    return total;
+  })();
 
   const getWorkerColor = (worker) => {
     if (worker.includes('Designer')) return 'bg-purple-500';
