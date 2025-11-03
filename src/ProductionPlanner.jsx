@@ -79,12 +79,29 @@ const ProductionPlanner = () => {
     { name: 'Virtual Container', time: 25, worker: 'Sysadmin(expert)', resources: ['1 Virtual Hardware', '1 Operating System', '1 Process Management', '1 Continuous Integration', '1 Cron Job'], category: 'module', type: 'sysadmin', icon: '📦' },
     { name: 'Cluster', time: 115, worker: 'Sysadmin(expert)', resources: ['3 Virtual Container', '10 Firewall'], category: 'module', type: 'sysadmin', icon: '⚡' },
     { name: 'Swarm Management', time: 140, worker: 'Sysadmin(expert)', resources: ['1 Cluster', '1 Virtual Container'], category: 'module', type: 'sysadmin', icon: '🐝' },
+    
+    // Features
+    { name: 'Research Point', time: 0, worker: 'Feature', resources: [], category: 'feature', type: 'feature', icon: '🔍' },
+    { name: 'Landing Page', time: 0, worker: 'Feature', resources: ['1 UI Component', '1 Backend Component', '1 Blueprint Component', '1 Graphics Component'], category: 'feature', type: 'feature', icon: '🌐' },
+    { name: 'Video Functionality', time: 0, worker: 'Feature', resources: ['1 Frontend Module', '1 Video Playback Module'], category: 'feature', type: 'feature', icon: '🎥' },
+    { name: 'Item Listing', time: 0, worker: 'Feature', resources: ['1 Backend Module', '1 Frontend Module', '1 Content Management Module'], category: 'feature', type: 'feature', icon: '📋' },
+    { name: 'Text Ads', time: 0, worker: 'Feature', resources: [], category: 'feature', type: 'feature', icon: '📰' },
+    { name: 'Sharing Functionality', time: 0, worker: 'Feature', resources: ['2 Backend Module', '1 Frontend Module', '1 Input Module', '2 Email Module', '1 UI Set'], category: 'feature', type: 'feature', icon: '📤' },
+    { name: 'Offline Content', time: 0, worker: 'Feature', resources: ['2 Backend Module', '1 Frontend Module', '2 Storage Module', '2 Database Layer', '1 UI Set'], category: 'feature', type: 'feature', icon: '💾' },
+    { name: 'Profile Page', time: 0, worker: 'Feature', resources: ['4 Input Module', '3 Frontend Module', '3 Backend Module', '2 UI Set', '1 Authentication Module'], category: 'feature', type: 'feature', icon: '👤' },
+    { name: 'Subscription', time: 0, worker: 'Feature', resources: [], category: 'feature', type: 'feature', icon: '💳' },
+    { name: 'Banner Ads', time: 0, worker: 'Feature', resources: [], category: 'feature', type: 'feature', icon: ' rekl' },
+    { name: 'Video Ads', time: 0, worker: 'Feature', resources: [], category: 'feature', type: 'feature', icon: '📺' },
+    { name: 'Ad_Block_Obfuscator', time: 0, worker: 'Feature', resources: ['2 Code Optimization Module', '4 UI Set', '2 API Client Module', '200 Research Point'], category: 'feature', type: 'feature', icon: '🛡️' },
+    { name: 'DDos Protection', time: 0, worker: 'Feature', resources: ['1 Code Optimization Module', '2 API Client Module', '200 Research Point', '1 Swarm Management', '5 Firewall'], category: 'feature', type: 'feature', icon: '🔒' },
+    { name: 'Help System', time: 0, worker: 'Feature', resources: ['4 Content Management Module', '4 Input Module', '3 Frontend Module', '3 Backend Module', '2 UI Set'], category: 'feature', type: 'feature', icon: '❓' },
   ];
 
   const filteredItems = useMemo(() => {
     return items.filter(item => {
       const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || 
+                             (selectedCategory === 'feature' && item.category === 'feature') ||
                              (selectedCategory === 'component' && item.category === 'component') ||
                              (selectedCategory === 'module' && item.category === 'module') ||
                              (selectedCategory === 'designer' && item.type === 'designer') ||
@@ -294,11 +311,13 @@ const ProductionPlanner = () => {
     if (worker.includes('Designer')) return 'bg-purple-500';
     if (worker.includes('Lead Developer')) return 'bg-orange-500';
     if (worker.includes('Sysadmin')) return 'bg-red-500';
+    if (worker.includes('Feature')) return 'bg-yellow-500';
     return 'bg-blue-500';
   };
 
   const getCategoryBadge = (item) => {
     if (item.category === 'module') return 'bg-green-100 text-green-800';
+    if (item.category === 'feature') return 'bg-yellow-100 text-yellow-800';
     return 'bg-blue-100 text-blue-800';
   };
 
@@ -326,7 +345,7 @@ const ProductionPlanner = () => {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {['all', 'component', 'module', 'designer', 'developer', 'lead', 'sysadmin'].map(cat => (
+                {['all', 'feature', 'component', 'module', 'designer', 'developer', 'lead', 'sysadmin'].map(cat => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
@@ -336,7 +355,8 @@ const ProductionPlanner = () => {
                         : 'bg-white/5 text-gray-300 hover:bg-white/10'
                     }`}
                   >
-                    {cat === 'all' ? 'Tümü' : 
+                    {cat === 'all' ? 'All' : 
+                     cat === 'feature' ? 'Feature' :
                      cat === 'component' ? 'Component' :
                      cat === 'module' ? 'Module' :
                      cat === 'designer' ? 'Designer' :

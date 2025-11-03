@@ -382,6 +382,137 @@ const malzemeler: Malzeme[] = [
       { isim: "Cluster", miktar: 1 },
       { isim: "Virtual Container", miktar: 1 }
     ]
+  },
+  {
+    isim: "Research Point",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: []
+  },
+  {
+    isim: "Landing Page",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: [
+      { isim: "UI Component", miktar: 1 },
+      { isim: "Backend Component", miktar: 1 },
+      { isim: "Blueprint Component", miktar: 1 },
+      { isim: "Graphics Component", miktar: 1 }
+    ]
+  },
+  {
+    isim: "Video Functionality",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: [
+      { isim: "Frontend Module", miktar: 1 },
+      { isim: "Video Playback Module", miktar: 1 }
+    ]
+  },
+  {
+    isim: "Item Listing",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: [
+      { isim: "Backend Module", miktar: 1 },
+      { isim: "Frontend Module", miktar: 1 },
+      { isim: "Content Management Module", miktar: 1 }
+    ]
+  },
+  {
+    isim: "Text Ads",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: []
+  },
+  {
+    isim: "Sharing Functionality",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: [
+      { isim: "Backend Module", miktar: 2 },
+      { isim: "Frontend Module", miktar: 1 },
+      { isim: "Input Module", miktar: 1 },
+      { isim: "Email Module", miktar: 2 },
+      { isim: "UI Set", miktar: 1 }
+    ]
+  },
+  {
+    isim: "Offline Content",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: [
+      { isim: "Backend Module", miktar: 2 },
+      { isim: "Frontend Module", miktar: 1 },
+      { isim: "Storage Module", miktar: 2 },
+      { isim: "Database Layer", miktar: 2 },
+      { isim: "UI Set", miktar: 1 }
+    ]
+  },
+  {
+    isim: "Profile Page",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: [
+      { isim: "Input Module", miktar: 4 },
+      { isim: "Frontend Module", miktar: 3 },
+      { isim: "Backend Module", miktar: 3 },
+      { isim: "UI Set", miktar: 2 },
+      { isim: "Authentication Module", miktar: 1 }
+    ]
+  },
+  {
+    isim: "Subscription",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: []
+  },
+  {
+    isim: "Banner Ads",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: []
+  },
+  {
+    isim: "Video Ads",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: []
+  },
+  {
+    isim: "Ad_Block_Obfuscator",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: [
+      { isim: "Code Optimization Module", miktar: 2 },
+      { isim: "UI Set", miktar: 4 },
+      { isim: "API Client Module", miktar: 2 },
+      { isim: "Research Point", miktar: 200 }
+    ]
+  },
+  {
+    isim: "DDos Protection",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: [
+      { isim: "Code Optimization Module", miktar: 1 },
+      { isim: "API Client Module", miktar: 2 },
+      { isim: "Research Point", miktar: 200 },
+      { isim: "Swarm Management", miktar: 1 },
+      { isim: "Firewall", miktar: 5 }
+    ]
+  },
+  {
+    isim: "Help System",
+    uretimSuresi: 0,
+    uretici: "Feature",
+    gerekliMalzemeler: [
+      { isim: "Content Management Module", miktar: 4 },
+      { isim: "Input Module", miktar: 4 },
+      { isim: "Frontend Module", miktar: 3 },
+      { isim: "Backend Module", miktar: 3 },
+      { isim: "UI Set", miktar: 2 }
+    ]
   }
 ];
 
