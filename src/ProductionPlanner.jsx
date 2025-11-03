@@ -325,30 +325,32 @@ const ProductionPlanner = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">🚀 Startup Company</h1>
-          <p className="text-purple-200">Üretim Planlayıcı</p>
+          <p className="text-purple-200 text-lg">Production Planner</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Sol Panel - Malzeme Listesi */}
-          <div className="lg:col-span-2 bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-            <div className="mb-6">
-              <div className="relative mb-4">
-                <Search className="absolute left-3 top-3 text-gray-400" size={20} />
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left Sidebar - Search and Filter */}
+          <div className="lg:w-56 flex-shrink-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+            <div className="mb-4">
+              <div className="relative mb-3">
+                <Search className="absolute left-2.5 top-2.5 text-gray-400" size={16} />
                 <input
                   type="text"
-                  placeholder="Malzeme ara..."
+                  placeholder="Search..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full pl-8 pr-3 py-1.5 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 text-base"
                 />
               </div>
+            </div>
 
-              <div className="flex flex-wrap gap-2">
+            <div className="max-h-[calc(100vh-200px)] overflow-y-auto pr-1 scrollable-element">
+              <div className="space-y-1">
                 {['all', 'feature', 'component', 'module', 'designer', 'developer', 'lead', 'sysadmin'].map(cat => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    className={`w-full text-left px-3 py-2 rounded-lg font-medium transition-all text-base ${
                       selectedCategory === cat
                         ? 'bg-purple-500 text-white'
                         : 'bg-white/5 text-gray-300 hover:bg-white/10'
@@ -365,31 +367,34 @@ const ProductionPlanner = () => {
                 ))}
               </div>
             </div>
+          </div>
 
-            <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+          {/* Main Content - Item List */}
+          <div className="flex-1 min-w-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+            <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto pr-2 scrollable-element">
               {filteredItems.map((item, idx) => (
                 <div
                   key={idx}
                   className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-all cursor-pointer"
                   onClick={() => addToQueue(item, 1)}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-2xl">{item.icon}</span>
-                        <h3 className="text-white font-semibold">{item.name}</h3>
+                        <h3 className="text-white font-semibold text-base truncate">{item.name}</h3>
                         <span className={`text-xs px-2 py-1 rounded ${getCategoryBadge(item)}`}>
                           {item.category}
                         </span>
                       </div>
-                      <div className="flex flex-wrap gap-3 text-sm">
+                      <div className="flex gap-3 text-sm">
                         <div className="flex items-center gap-1 text-purple-300">
                           <Clock size={14} />
                           <span>{item.time}h</span>
                         </div>
                         <div className="flex items-center gap-1 text-blue-300">
                           <User size={14} />
-                          <span>{item.worker}</span>
+                          <span className="truncate max-w-[120px]">{item.worker}</span>
                         </div>
                       </div>
                       {item.resources.length > 0 && (
@@ -399,17 +404,17 @@ const ProductionPlanner = () => {
                               e.stopPropagation(); // Prevent card click from triggering
                               toggleExpand(idx);
                             }}
-                            className="flex items-center gap-1 text-xs text-gray-300 hover:text-white"
+                            className="flex items-center gap-1 text-sm text-gray-400 hover:text-white"
                           >
                             {expandedItems[idx] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                            Gerekli Kaynaklar ({item.resources.length})
+                            <span>Required ({item.resources.length})</span>
                           </button>
                           {expandedItems[idx] && (
                             <div className="mt-2 pl-4 space-y-1">
                               {item.resources.map((res, i) => (
-                                <div key={i} className="text-xs text-gray-400 flex items-center gap-1">
+                                <div key={i} className="text-sm text-gray-500 flex items-center gap-1">
                                   <Package size={12} />
-                                  {res}
+                                  <span className="truncate">{res}</span>
                                 </div>
                               ))}
                             </div>
@@ -417,115 +422,109 @@ const ProductionPlanner = () => {
                         </div>
                       )}
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent card click from triggering
-                        addToQueue(item, 1);
-                      }}
-                      className="p-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all ml-2"
-                    >
-                      <Plus size={20} />
-                    </button>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Sağ Panel - Üretim Kuyruğu */}
-          <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
-            <h2 className="text-2xl font-bold text-white mb-4">📋 Üretim Kuyruğu</h2>
-            
-            <div className="bg-purple-500/20 border border-purple-500/40 rounded-lg p-4 mb-4">
-              <div className="text-white">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold">Toplam Süre:</span>
-                  <span className="text-2xl font-bold">{totalTime}h</span>
+          {/* Right Panel - Production Queue and Summary */}
+          <div className="flex flex-col gap-6 min-w-[360px] w-[360px] flex-shrink-0">
+            {/* Production Queue */}
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 h-[340px] flex flex-col">
+              <h2 className="text-2xl font-bold text-white mb-4">📋 Production Queue</h2>
+              
+              <div className="bg-purple-500/20 border border-purple-500/40 rounded-lg p-4 mb-4 flex-shrink-0">
+                <div className="text-white">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-semibold text-lg">Total Time:</span>
+                    <span className="text-2xl font-bold">{totalTime}h</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold text-lg">Item Count:</span>
+                    <span className="text-xl">{productionQueue.length}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold">Malzeme Sayısı:</span>
-                  <span className="text-xl">{productionQueue.length}</span>
-                </div>
+              </div>
+
+              <div className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-2 scrollable-element">
+                {productionQueue.length === 0 ? (
+                  <div className="text-center text-gray-400 py-8">
+                    <Package size={48} className="mx-auto mb-2 opacity-50" />
+                    <p className="text-lg">No items added yet</p>
+                  </div>
+                ) : (
+                  productionQueue.map((item) => (
+                    <div
+                      key={item.id}
+                      className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-all"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-xl">{item.icon}</span>
+                            <h4 className="text-white font-medium text-lg truncate">{item.name}</h4>
+                          </div>
+                          <div className="flex gap-3 text-base">
+                            <span className="text-purple-300">{item.time}h</span>
+                            <span className={`px-2 py-1 rounded text-white text-base ${getWorkerColor(item.worker)}`}>
+                              {item.worker.split('(')[0]}
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => removeFromQueue(item.id)}
+                          className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all ml-2"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
-            <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-              {productionQueue.length === 0 ? (
-                <div className="text-center text-gray-400 py-8">
-                  <Package size={48} className="mx-auto mb-2 opacity-50" />
-                  <p>Henüz malzeme eklenmedi</p>
-                </div>
-              ) : (
-                productionQueue.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 transition-all"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span>{item.icon}</span>
-                          <h4 className="text-white text-sm font-medium">{item.name}</h4>
-                        </div>
-                        <div className="flex gap-2 text-xs">
-                          <span className="text-purple-300">{item.time}h</span>
-                          <span className={`px-2 py-0.5 rounded text-white text-xs ${getWorkerColor(item.worker)}`}>
-                            {item.worker.split('(')[0]}
-                          </span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => removeFromQueue(item.id)}
-                        className="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-
             {/* Total Production Summary */}
-            <div className="mt-6 border-t border-white/20 pt-4">
-              <h3 className="text-lg font-bold text-white mb-3">📊 Toplam Üretim Özeti</h3>
-              <div className="bg-white/5 border border-white/10 rounded-lg p-3 max-h-[400px] overflow-y-auto pr-2">
+            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 h-[340px] flex flex-col">
+              <h3 className="text-xl font-bold text-white mb-3">📊 Production Summary</h3>
+              <div className="bg-white/5 border border-white/10 rounded-lg p-4 flex-1 min-h-0 overflow-y-auto scrollable-element">
                 {Object.keys(totalProductions).length === 0 ? (
-                  <p className="text-gray-400 text-sm">Henüz üretim yapılmadı</p>
+                  <p className="text-gray-400 text-lg">No production yet</p>
                 ) : (
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-white text-sm">Toplam Üretim:</h4>
-                    <div className="space-y-1">
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-white text-lg">Total Production:</h4>
+                    <div className="space-y-2">
                       {Object.entries(totalProductions).map(([item, count]) => (
-                        <div key={item} className="flex justify-between text-sm">
-                          <span className="text-gray-300">{item}:</span>
-                          <span className="text-white font-medium">{count}</span>
+                        <div key={item} className="flex justify-between text-lg">
+                          <span className="text-gray-300 truncate flex-1 mr-2">{item}:</span>
+                          <span className="text-white font-medium flex-shrink-0">{count}</span>
                         </div>
                       ))}
                     </div>
                     
-                    <div className="border-t border-white/20 pt-2 mt-2">
-                      <div className="flex justify-between font-bold text-white">
-                        <span>Toplam Malzeme:</span>
+                    <div className="border-t border-white/20 pt-3 mt-3">
+                      <div className="flex justify-between font-bold text-white text-lg">
+                        <span>Total Items:</span>
                         <span>{Object.values(totalProductions).reduce((sum, count) => sum + count, 0)}</span>
                       </div>
                     </div>
                     
                     {/* Additional Production Details */}
-                    <div className="border-t border-white/20 pt-2 mt-2">
-                      <h4 className="font-semibold text-white text-sm">Üretim Detayları:</h4>
-                      <div className="space-y-1 mt-1">
+                    <div className="border-t border-white/20 pt-3 mt-3">
+                      <h4 className="font-semibold text-white text-lg">Production Details:</h4>
+                      <div className="space-y-2 mt-2">
                         {Object.entries(productionDetails).map(([itemName, details]) => (
-                          <div key={itemName} className="mt-2">
-                            <div className="text-xs text-purple-300 font-semibold">{itemName}</div>
-                            <div className="text-xs text-gray-300">Toplam Süre: <span className="text-white">{details.totalTime} saat</span></div>
-                            <div className="text-xs text-gray-300">Ham Maddeler:</div>
-                            <div className="text-xs text-gray-400 ml-2">
+                          <div key={itemName} className="mt-3">
+                            <div className="text-base text-purple-300 font-semibold truncate">{itemName}</div>
+                            <div className="text-base text-gray-300">Total Time: <span className="text-white">{details.totalTime} hours</span></div>
+                            <div className="text-base text-gray-300">Raw Materials:</div>
+                            <div className="text-base text-gray-400 ml-3">
                               {Object.entries(details.rawMaterials).map(([material, count], idx) => (
-                                <div key={idx}>{material}: {count}</div>
+                                <div key={idx} className="truncate">{material}: {count}</div>
                               ))}
                             </div>
-                            <div className="text-xs text-gray-300">Üretim Zinciri: <span className="text-white">{details.productionChain.join(' → ')}</span></div>
+                            <div className="text-base text-gray-300">Production Chain: <span className="text-white">{details.productionChain.join(' → ')}</span></div>
                           </div>
                         ))}
                       </div>
