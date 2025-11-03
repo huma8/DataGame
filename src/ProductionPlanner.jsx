@@ -175,7 +175,9 @@ const ProductionPlanner = () => {
   const removeFromQueue = (id) => {
     const removedItem = productionQueue.find(item => item.id === id);
     if (removedItem) {
-      setProductionQueue(productionQueue.filter(item => item.id !== id));
+      // Update the queue by filtering out the removed item
+      const updatedQueue = productionQueue.filter(item => item.id !== id);
+      setProductionQueue(updatedQueue);
       
       // Update total production by subtracting the removed item and all its sub-resources
       setTotalProductions(prev => {
@@ -203,10 +205,8 @@ const ProductionPlanner = () => {
         const itemCounts = {};
         
         // Count occurrences of each item in the current queue
-        for (const item of productionQueue) {
-          if (item.id !== id) { // Skip the removed item
-            itemCounts[item.name] = (itemCounts[item.name] || 0) + 1;
-          }
+        for (const item of updatedQueue) {
+          itemCounts[item.name] = (itemCounts[item.name] || 0) + 1;
         }
         
         // Recalculate details for each unique item in the queue
@@ -221,8 +221,7 @@ const ProductionPlanner = () => {
         return updated;
       });
       
-      // Update detailed breakdown by removing the related entries
-      // For simplicity, we'll just recalculate the entire breakdown from the current production queue
+      // Update detailed breakdown by recalculating from the current production queue
       setDetailedBreakdown(calculateAllBreakdowns());
     }
   };
@@ -476,31 +475,20 @@ const ProductionPlanner = () => {
                   <p className="text-gray-400 text-sm">Henüz üretim yapılmadı</p>
                 ) : (
                   <div className="space-y-2">
-                    <h4 className="font-semibold text-white text-sm">Detaylı Kırılım:</h4>
-                    <div className="bg-gray-800/50 rounded p-2 text-xs max-h-40 overflow-y-auto">
-                      {detailedBreakdown.map((line, index) => (
-                        <div key={index} className="text-gray-200 font-mono">
-                          {line}
+                    <h4 className="font-semibold text-white text-sm">Toplam Üretim:</h4>
+                    <div className="space-y-1">
+                      {Object.entries(totalProductions).map(([item, count]) => (
+                        <div key={item} className="flex justify-between text-sm">
+                          <span className="text-gray-300">{item}:</span>
+                          <span className="text-white font-medium">{count}</span>
                         </div>
                       ))}
                     </div>
                     
                     <div className="border-t border-white/20 pt-2 mt-2">
-                      <h4 className="font-semibold text-white text-sm">Toplam Üretim:</h4>
-                      <div className="space-y-1 mt-1">
-                        {Object.entries(totalProductions).map(([item, count]) => (
-                          <div key={item} className="flex justify-between text-sm">
-                            <span className="text-gray-300">{item}:</span>
-                            <span className="text-white font-medium">{count}</span>
-                          </div>
-                        ))}
-                      </div>
-                      
-                      <div className="border-t border-white/20 mt-2 pt-2">
-                        <div className="flex justify-between font-bold text-white">
-                          <span>Toplam Malzeme:</span>
-                          <span>{Object.values(totalProductions).reduce((sum, count) => sum + count, 0)}</span>
-                        </div>
+                      <div className="flex justify-between font-bold text-white">
+                        <span>Toplam Malzeme:</span>
+                        <span>{Object.values(totalProductions).reduce((sum, count) => sum + count, 0)}</span>
                       </div>
                     </div>
                     
