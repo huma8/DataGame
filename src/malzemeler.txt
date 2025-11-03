@@ -1,0 +1,48 @@
+İSİM/ÜRETİM SAATİ/ÜRETİCİ/KULLANILAN KAYNAK
+----------------------------------------------------------------------------
+Blueprint Component: 2h, Designer(beginner), -
+Wireframe Component: 3h, Designer(beginner), -
+Graphics Component: 4h, Designer(beginner), -
+UI Element: 6h, Designer(beginner), 1 Blueprint Component + 1 Graphics Component
+UI Set: 18h, Designer(intermediate), 2 Wireframe Component + 2 UI Element
+Responsive UI: 18h, Designer(intermediate), 2 Wireframe Component + 2 UI Element
+Documentation Component: 12h, Designer(expert), -
+Design Guidelines: 90h, Designer(expert), 3 Documentation Component, 3 Responsive UI 
+
+UI Component: 2h, Developer(beginner), -
+Backend Component: 4h, Developer(beginner), -
+Network Component: 6h, Developer(beginner), -
+Database Component: 4h, Developer(beginner), -
+Video Component: 14h, Developer(beginner), -
+Semantic Component: 3h, Developer(intermediate), -
+Encrpytion Component: 8h, Developer(intermediate), -
+Filesystem Component: 4h, Developer(intermediate), -
+Smtp Component: 8h, Developer(intermediate), -
+i18n Component: 4h, Developer(expert), -
+Search Algorithm Component: 12h, Developer(expert), -
+Compression Component: 8h, Developer(expert), -
+
+Interface Module: 15h, Lead Developer(beginner), 2 UI Element + 1 Wireframe Component
+Frontend Module: 21h, Lead Developer(beginner), 1 UI Element + 1 Interface Module
+Backend Module: 10h, Lead Developer(beginner), 1 Backend Component + 1 Network Component
+Input Module: 6h, Lead Developer(beginner), 1 UI Component + 1 Backend Component
+Storage Module: 8h, Lead Developer(beginner), 1 Filesystem Component + 1 Backend Component
+Content Management Module: 37h, Lead Developer(beginner), 1 Frontend Module + 1 Input Module + 1 Backend Module
+Video Playback Module: 45h, Lead Developer(beginner), 1 Video Component + 1 Frontend Module + 1 Backend Module
+Seo Module: 24h, Lead Developer(intermediate), 1 Frontend Module + 1 Semantic Component
+Authentication Module: 22h, Lead Developer(intermediate), 1 Database Component + 1 Encrpytion Component + 1 Backend Module
+Email Module: 12h, Lead Developer(intermediate), 1 Smtp Component + 1 Backend Component
+Database Layer: 14h, Lead Developer(intermediate), 1 Database Component + 1 Backend Component + 1 Network Component
+Notification Module: 18h, Lead Developer(intermediate), 1 UI Component + 1 Backend Component + 1 Email Module
+Payment Gateway Module: 76h, Lead Developer(expert), 1 Database Layer + 1 API Client Module + 1 Authentication Module
+Localization Module: 25h, Lead Developer(expert), 1 i18n Component + 1 Frontend Module
+Search Module: 20h, Lead Developer(expert), 1 Database Component + 1 Search Algorithm Component + 1 Backend Component
+Bandwith Compression Module: 18h, Lead Developer(expert), 1 Compression Component + 1 Network Component + 1 Backend Component
+API Client Module: 40h, Lead Developer(expert), 1 Backend Module + 1 Database Layer + 2 Compression Component
+Code Optimization Module: 90h, Lead Developer(expert), 2 Backend Module + 2 Database Layer + 2 Frontend Module
+
+
+-------------------------
+
+
+Devamı gelecek
