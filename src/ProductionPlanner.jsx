@@ -7,7 +7,6 @@ const ProductionPlanner = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [productionQueue, setProductionQueue] = useState([]);
   const [expandedItems, setExpandedItems] = useState({});
-  const [quantity, setQuantity] = useState(1);
   const [totalProductions, setTotalProductions] = useState({});
   const [detailedBreakdown, setDetailedBreakdown] = useState([]);
   const [productionDetails, setProductionDetails] = useState({});
@@ -371,7 +370,8 @@ const ProductionPlanner = () => {
               {filteredItems.map((item, idx) => (
                 <div
                   key={idx}
-                  className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-all"
+                  className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-all cursor-pointer"
+                  onClick={() => addToQueue(item, 1)}
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
@@ -395,7 +395,10 @@ const ProductionPlanner = () => {
                       {item.resources.length > 0 && (
                         <div className="mt-2">
                           <button
-                            onClick={() => toggleExpand(idx)}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent card click from triggering
+                              toggleExpand(idx);
+                            }}
                             className="flex items-center gap-1 text-xs text-gray-300 hover:text-white"
                           >
                             {expandedItems[idx] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
@@ -414,33 +417,15 @@ const ProductionPlanner = () => {
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 ml-4">
-                      <button
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all"
-                      >
-                        <Minus size={16} />
-                      </button>
-                      <input
-                        type="number"
-                        min="1"
-                        value={quantity}
-                        onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                        className="w-16 text-center bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      />
-                      <button
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="p-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all"
-                      >
-                        <Plus size={16} />
-                      </button>
-                      <button
-                        onClick={() => addToQueue(item, quantity)}
-                        className="p-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all ml-2"
-                      >
-                        <Plus size={20} />
-                      </button>
-                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent card click from triggering
+                        addToQueue(item, 1);
+                      }}
+                      className="p-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-all ml-2"
+                    >
+                      <Plus size={20} />
+                    </button>
                   </div>
                 </div>
               ))}
