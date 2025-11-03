@@ -316,6 +316,72 @@ const malzemeler: Malzeme[] = [
       { isim: "Database Layer", miktar: 2 },
       { isim: "Frontend Module", miktar: 2 }
     ]
+  },
+  {
+    isim: "Virtual Hardware",
+    uretimSuresi: 4,
+    uretici: "Sysadmin(beginner)",
+    gerekliMalzemeler: []
+  },
+  {
+    isim: "Operating System",
+    uretimSuresi: 4,
+    uretici: "Sysadmin(beginner)",
+    gerekliMalzemeler: []
+  },
+  {
+    isim: "Firewall",
+    uretimSuresi: 4,
+    uretici: "Sysadmin(beginner)",
+    gerekliMalzemeler: []
+  },
+  {
+    isim: "Process Management",
+    uretimSuresi: 6,
+    uretici: "Sysadmin(intermediate)",
+    gerekliMalzemeler: []
+  },
+  {
+    isim: "Continuous Integration",
+    uretimSuresi: 8,
+    uretici: "Sysadmin(intermediate)",
+    gerekliMalzemeler: []
+  },
+  {
+    isim: "Cron Job",
+    uretimSuresi: 3,
+    uretici: "Sysadmin(intermediate)",
+    gerekliMalzemeler: []
+  },
+  {
+    isim: "Virtual Container",
+    uretimSuresi: 25,
+    uretici: "Sysadmin(expert)",
+    gerekliMalzemeler: [
+      { isim: "Virtual Hardware", miktar: 1 },
+      { isim: "Operating System", miktar: 1 },
+      { isim: "Process Management", miktar: 1 },
+      { isim: "Continuous Integration", miktar: 1 },
+      { isim: "Cron Job", miktar: 1 }
+    ]
+  },
+  {
+    isim: "Cluster",
+    uretimSuresi: 115,
+    uretici: "Sysadmin(expert)",
+    gerekliMalzemeler: [
+      { isim: "Virtual Container", miktar: 3 },
+      { isim: "Firewall", miktar: 10 }
+    ]
+  },
+  {
+    isim: "Swarm Management",
+    uretimSuresi: 140,
+    uretici: "Sysadmin(expert)",
+    gerekliMalzemeler: [
+      { isim: "Cluster", miktar: 1 },
+      { isim: "Virtual Container", miktar: 1 }
+    ]
   }
 ];
 

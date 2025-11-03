@@ -41,8 +41,40 @@ Bandwith Compression Module: 18h, Lead Developer(expert), 1 Compression Componen
 API Client Module: 40h, Lead Developer(expert), 1 Backend Module + 1 Database Layer + 2 Compression Component
 Code Optimization Module: 90h, Lead Developer(expert), 2 Backend Module + 2 Database Layer + 2 Frontend Module
 
-
 -------------------------
+
+Virtual Hardware: 4h, Sysadmin(beginner), -
+Operating System: 4h, Sysadmin(beginner), -
+Firewall: 4h, Sysadmin(beginner), -
+Process Management: 6h, Sysadmin(intermediate), -
+Continuous Integration: 8h, Sysadmin(intermediate), -
+Cron Job: 3h, Sysadmin(intermediate), -
+Virtual Container: 25h, Sysadmin(expert), 1 Virtual Hardware + 1 Operating System + 1 Process Management + 1 Continuous Integration + 1 Cron Job
+Cluster: 115h, Sysadmin(expert), 3 Virtual Container + 10 Firewall
+Swarm Management: 140h, Sysadmin(expert), 1 Cluster + 1 Virtual Container
+
+
+
+
+------------------------------
+
+These are features which are only buy once but then you can upgrade it without research point Think like achievements. put it as a tab like components or modules etc.
+FEATURE/RESEARCH POINT/SOURCES
+
+Research Point: -,-
+Landing Page: 12rp, 1 UI Component + 1 Backend Component + 1 Blueprint Component + 1 Graphics Component
+Video Functionality: 30rp, 1 Frontend Module + 1 Video Playback Module
+Item Listing: 30rp, 1 Backend Module + 1 Frontend Module + 1 Content Management Module
+Text Ads: 90rp, -
+Sharing Functionality: 200rp, 2 Backend Module + 1 Frontend Module + 1 Input Module + 2 Email Module + 1 UI Set
+Offline Content: 200rp, 2 Backend Module + 1 Frontend Module + 2 Storage Module + 2 Database Layer + 1 UI Set
+Profile Page: 300rp, 4 Input Module + 3 Frontend Module + 3 Backend Module + 2 UI Set + 1 Authentication Module
+Subscription: 400rp, -
+Banner Ads: 500rp, -
+Video Ads: 2000rp, -
+Ad_Block_Obfuscator: 2500rp, 2 Code Optimization Module + 4 UI Set + 2 API Client Module + 200 Research Point
+DDos Protection: 2500rp, 1 Code Optimization Module + 2 API Client Module + 200 Research Point + 1 Swarm Management + 5 Firewall
+Help System: 2500rp, 4 Content Management Module + 4 Input Module + 3 Frontend Module + 3 Backend Module + 2 UI Set
 
 
 Devamı gelecek

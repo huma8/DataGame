@@ -43,15 +43,15 @@ Code Optimization Module: 90h, Lead Developer(expert), 2 Backend Module + 2 Data
 
 -------------------------
 
-Virtual Hardware: 4h, Sysadmin(), -
-Operating System: 4h, Sysadmin(), -
-Firewall: 4h, Sysadmin(), -
-Process Management: 6h, Sysadmin(), -
-Continuous Integration: 8h, Sysadmin(), -
-Cron Job: 3h, Sysadmin(), -
-Virtual Container: 25h, Sysadmin(), 1 Virtual Hardware + 1 Operating System + 1 Process Management + 1 Continuous Integration + 1 Cron Job
-Cluster: 115h, Sysadmin(), 3 Virtual Container + 10 Firewall
-Swarm Management: Sysadmin(), 1 Cluster + 1 Virtual Container
+Virtual Hardware: 4h, Sysadmin(beginner), -
+Operating System: 4h, Sysadmin(beginner), -
+Firewall: 4h, Sysadmin(beginner), -
+Process Management: 6h, Sysadmin(intermediate), -
+Continuous Integration: 8h, Sysadmin(intermediate), -
+Cron Job: 3h, Sysadmin(intermediate), -
+Virtual Container: 25h, Sysadmin(expert), 1 Virtual Hardware + 1 Operating System + 1 Process Management + 1 Continuous Integration + 1 Cron Job
+Cluster: 115h, Sysadmin(expert), 3 Virtual Container + 10 Firewall
+Swarm Management: 140h, Sysadmin(expert), 1 Cluster + 1 Virtual Container
 
 
 

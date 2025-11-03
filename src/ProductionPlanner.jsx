@@ -68,6 +68,17 @@ const ProductionPlanner = () => {
     { name: 'Bandwidth Compression Module', time: 18, worker: 'Lead Developer(expert)', resources: ['1 Compression Component', '1 Network Component', '1 Backend Component'], category: 'module', type: 'lead', icon: '📡' },
     { name: 'API Client Module', time: 40, worker: 'Lead Developer(expert)', resources: ['1 Backend Module', '1 Database Layer', '2 Compression Component'], category: 'module', type: 'lead', icon: '🔌' },
     { name: 'Code Optimization Module', time: 90, worker: 'Lead Developer(expert)', resources: ['2 Backend Module', '2 Database Layer', '2 Frontend Module'], category: 'module', type: 'lead', icon: '⚙️' },
+    
+    // Sysadmin items
+    { name: 'Virtual Hardware', time: 4, worker: 'Sysadmin(beginner)', resources: [], category: 'component', type: 'sysadmin', icon: '🖥️' },
+    { name: 'Operating System', time: 4, worker: 'Sysadmin(beginner)', resources: [], category: 'component', type: 'sysadmin', icon: '💾' },
+    { name: 'Firewall', time: 4, worker: 'Sysadmin(beginner)', resources: [], category: 'component', type: 'sysadmin', icon: '🛡️' },
+    { name: 'Process Management', time: 6, worker: 'Sysadmin(intermediate)', resources: [], category: 'component', type: 'sysadmin', icon: '🔄' },
+    { name: 'Continuous Integration', time: 8, worker: 'Sysadmin(intermediate)', resources: [], category: 'component', type: 'sysadmin', icon: '🔄' },
+    { name: 'Cron Job', time: 3, worker: 'Sysadmin(intermediate)', resources: [], category: 'component', type: 'sysadmin', icon: '⏰' },
+    { name: 'Virtual Container', time: 25, worker: 'Sysadmin(expert)', resources: ['1 Virtual Hardware', '1 Operating System', '1 Process Management', '1 Continuous Integration', '1 Cron Job'], category: 'module', type: 'sysadmin', icon: '📦' },
+    { name: 'Cluster', time: 115, worker: 'Sysadmin(expert)', resources: ['3 Virtual Container', '10 Firewall'], category: 'module', type: 'sysadmin', icon: '⚡' },
+    { name: 'Swarm Management', time: 140, worker: 'Sysadmin(expert)', resources: ['1 Cluster', '1 Virtual Container'], category: 'module', type: 'sysadmin', icon: '🐝' },
   ];
 
   const filteredItems = useMemo(() => {
@@ -78,7 +89,8 @@ const ProductionPlanner = () => {
                              (selectedCategory === 'module' && item.category === 'module') ||
                              (selectedCategory === 'designer' && item.type === 'designer') ||
                              (selectedCategory === 'developer' && item.type === 'developer') ||
-                             (selectedCategory === 'lead' && item.type === 'lead');
+                             (selectedCategory === 'lead' && item.type === 'lead') ||
+                             (selectedCategory === 'sysadmin' && item.type === 'sysadmin');
       return matchesSearch && matchesCategory;
     });
   }, [searchTerm, selectedCategory]);
@@ -281,6 +293,7 @@ const ProductionPlanner = () => {
   const getWorkerColor = (worker) => {
     if (worker.includes('Designer')) return 'bg-purple-500';
     if (worker.includes('Lead Developer')) return 'bg-orange-500';
+    if (worker.includes('Sysadmin')) return 'bg-red-500';
     return 'bg-blue-500';
   };
 
@@ -313,7 +326,7 @@ const ProductionPlanner = () => {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                {['all', 'component', 'module', 'designer', 'developer', 'lead'].map(cat => (
+                {['all', 'component', 'module', 'designer', 'developer', 'lead', 'sysadmin'].map(cat => (
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
@@ -327,7 +340,8 @@ const ProductionPlanner = () => {
                      cat === 'component' ? 'Component' :
                      cat === 'module' ? 'Module' :
                      cat === 'designer' ? 'Designer' :
-                     cat === 'developer' ? 'Developer' : 'Lead Dev'}
+                     cat === 'developer' ? 'Developer' :
+                     cat === 'lead' ? 'Lead Dev' : 'Sysadmin'}
                   </button>
                 ))}
               </div>
