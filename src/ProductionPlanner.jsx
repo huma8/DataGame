@@ -327,8 +327,8 @@ const ProductionPlanner = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">🚀 Startup Company</h1>
-          <p className="text-purple-200 text-lg">Production Planner</p>
+          <h1 className="text-4xl font-extrabold text-white mb-2">🚀 Startup Company</h1>
+          <p className="text-purple-200 text-lg leading-relaxed">Production Planner</p>
         </div>
 
         <div className="flex flex-col lg:flex-row gap-6">
@@ -387,7 +387,7 @@ const ProductionPlanner = () => {
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-2xl">{item.icon}</span>
                         <h3 className="text-white font-semibold text-base truncate">{item.name}</h3>
-                        <span className={`text-xs px-2 py-1 rounded ${getCategoryBadge(item)}`}>
+                        <span className={`text-xs min-readable px-2 py-1 rounded ${getCategoryBadge(item)}`}>
                           {item.category}
                         </span>
                       </div>
@@ -441,12 +441,12 @@ const ProductionPlanner = () => {
               <div className="bg-purple-500/20 border border-purple-500/40 rounded-lg p-4 mb-4 flex-shrink-0">
                 <div className="text-white">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold text-lg">Total Time:</span>
-                    <span className="text-2xl font-bold">{totalTime}h</span>
+                    <span className="font-semibold text-base">Total Time:</span>
+                    <span className="text-xl font-bold">{totalTime}h</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold text-lg">Item Count:</span>
-                    <span className="text-xl">{productionQueue.length}</span>
+                    <span className="font-semibold text-base">Item Count:</span>
+                    <span className="text-lg">{productionQueue.length}</span>
                   </div>
                 </div>
               </div>
@@ -471,7 +471,7 @@ const ProductionPlanner = () => {
                           </div>
                           <div className="flex gap-3 text-base">
                             <span className="text-purple-300">{item.time}h</span>
-                            <span className={`px-2 py-1 rounded text-white text-base ${getWorkerColor(item.worker)}`}>
+                            <span className={`px-2 py-1 rounded text-white text-sm ${getWorkerColor(item.worker)}`}>
                               {item.worker.split('(')[0]}
                             </span>
                           </div>
