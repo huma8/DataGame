@@ -289,6 +289,68 @@ const ProductionPlanner = () => {
     setDetailedBreakdown(calculateAllBreakdowns());
   };
   
+  const removeAllFromQueue = (id) => {
+    // Find item in queue by id
+    const itemIndex = productionQueue.findIndex(item => item.id === id);
+    if (itemIndex === -1) return;
+    
+    const item = productionQueue[itemIndex];
+    const itemQuantity = item.quantity || 1;
+    const updatedQueue = [...productionQueue];
+    
+    // Remove the item completely from the queue
+    updatedQueue.splice(itemIndex, 1);
+    
+    setProductionQueue(updatedQueue);
+    
+    // Update total production by subtracting all instances of the item and all its sub-resources
+    setTotalProductions(prev => {
+      const updated = { ...prev };
+      
+      // Use the new calculation function from uretim-hesaplama.js
+      const allResources = cikarToplamUretimler(item.name, itemQuantity);
+      
+      // Subtract all resources from the total
+      for (const [resourceName, count] of Object.entries(allResources)) {
+        if (updated[resourceName]) {
+          updated[resourceName] = Math.max(0, updated[resourceName] - count);
+          if (updated[resourceName] === 0) {
+            delete updated[resourceName];
+          }
+        }
+      }
+      
+      return updated;
+    });
+    
+    // Update production details by recalculating based on the current queue
+    setProductionDetails(prev => {
+      const updated = {};
+      const itemCounts = {};
+      
+      // Count occurrences of each item in the current queue
+      for (const queueItem of updatedQueue) {
+        const name = queueItem.name;
+        const quantity = queueItem.quantity || 1;
+        itemCounts[name] = (itemCounts[name] || 0) + quantity;
+      }
+      
+      // Recalculate details for each unique item in the queue
+      for (const [itemName, count] of Object.entries(itemCounts)) {
+        updated[itemName] = {
+          totalTime: toplamUretimSuresi(itemName, count),
+          rawMaterials: cikarHammaddeler(itemName, count),
+          productionChain: uretimZinciri(itemName)
+        };
+      }
+      
+      return updated;
+    });
+    
+    // Update detailed breakdown by recalculating from the current production queue
+    setDetailedBreakdown(calculateAllBreakdowns());
+  };
+  
   // Helper function to aggregate raw materials
   const aggregateRawMaterials = (existing, newMaterials) => {
     const result = { ...existing };
@@ -595,7 +657,7 @@ const ProductionPlanner = () => {
                           <Plus size={14} />
                         </button>
                         <button
-                          onClick={() => removeFromQueue(item.id)}
+                          onClick={() => removeAllFromQueue(item.id)}
                           className="p-1 bg-red-500/80 hover:bg-red-600 text-white rounded transition-all ml-1"
                         >
                           <Trash2 size={14} />
