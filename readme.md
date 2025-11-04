@@ -1,98 +1,118 @@
-🔧 Planlanan Çalışma Mantığı
-1️⃣ Veri Okuma
+🎨 AI Prompt: Startup Company Production Planner UI Enhancement
+Layout Structure (CRITICAL - ÇOK ÖNEMLİ)
+Grid System:
 
-malzemeler.txt dosyasındaki her satır bir “recipe” olarak parse edilecek:
-<Ürün Adı>: <süre>, <üretici>, <girdiler>
-Girdiler varsa + ile ayrılacak (örnek: 1 Backend Component + 1 Network Component).
+Container genişliği: MAX 1280px
+Container yüksekliği: MAX 720px
+4 Sütun düzeni: 1 + 2 + 3 + 2 = 8 birim (toplam 1280px)
 
-2️⃣ Task Dictionary Yapısı
-
-Her ürün için şu formatta bir sözlük oluşturulacak:
-{
-  "isim": "Payment Gateway Module",
-  "süre": 76,
-  "üretici": "Lead Developer(expert)",
-  "gerekenler": [
-      {"isim": "Database Layer", "adet": 1},
-      {"isim": "API Client Module", "adet": 1},
-      {"isim": "Authentication Module", "adet": 1}
-  ]
-}
-
-3️⃣ Recursive Hesaplama
-
-Fonksiyon hesapla("Payment Gateway Module") çağrıldığında:
-
-Ürün için gereken alt bileşenler bulunur.
-
-Her biri için hesapla() tekrar çağrılır.
-
-En dipte hammaddeye ulaşıldığında (- girdi yoksa) geri döner.
-
-Tüm ağaçtan toplanan:
-
-Toplam süre,
-
-Ham madde adetleri,
-
-Üretici zinciri
-döndürülür.
-
-4️⃣ Örnek Sonuç
-Üretim: Payment Gateway Module
-Toplam Süre: 370 saat
-Ham Maddeler:
- - Database Component: 3
- - Backend Component: 5
- - Network Component: 2
- - Compression Component: 3
-Üretim Zinciri:
- Designer(beginner) → Developer(beginner) → Lead Developer(expert)
+Sütun 1 (Sidebar): 160px (1/8 × 1280)
+Sütun 2 (Items): 320px (2/8 × 1280)
+Sütun 3 (Queue): 480px (3/8 × 1280)
+Sütun 4 (Summary): 320px (2/8 × 1280)
 
 
-iki fonksiyon kullanılabilecek, örneğin:
-çıkar_hammaddeler("Payment Gateway Module")
-çıkar_toplam_üretimler("Payment Gateway Module")
+Sütunlar arası gap hesaba kat (her sütundan biraz düş)
+HER SÜTUN SABİT YÜKSEKLİK: 720px - içerik taşarsa scroll
+Sütunlar asla genişlemez veya uzamaz
+Mobile'da dikey stack olabilir (responsive)
+
+Column 1: Category Sidebar (160px)
+
+Yükseklik: 720px (sabit)
+Search input üstte
+Kategori listesi (scroll)
+Overflow-y: auto
+
+Column 2: Items List (320px)
+
+Yükseklik: 720px (sabit)
+Search + Quantity input üstte (sticky)
+Item kartları (scroll)
+Overflow-y: auto
+
+Column 3: Production Queue (480px) - EN GENİŞ
+
+Yükseklik: 720px (sabit)
+Header + Stats üstte (sticky)
+Queue items (scroll)
+Overflow-y: auto
+
+Column 4: Production Summary (320px)
+
+Yükseklik: 720px (sabit)
+Header üstte
+Production details (scroll)
+Overflow-y: auto
 
 
-🔧 Fonksiyon Mantığı — çıkar_toplam_üretimler(ürün_ismi, adet=1)
-Adım Adım İşleyiş
+Visual Enhancements
+Animations:
 
-Başlangıçta örneğin "Payment Gateway Module", adet=1 girilir.
+Buton hover: scale(1.05) + mor glow
+Kart hover: translateY(-2px) + shadow artışı
+Item eklenirken: fade-in + slide-in (300ms)
+Item silinirken: fade-out + scale(0.95) (200ms)
+Quantity badge değişiminde: pulse animasyon
+Tüm transition: 200-300ms ease
 
-Fonksiyon:
+Typography:
 
-Önce bu ürünün alt bileşenlerini inceler:
-→ Database Layer:1, API Client Module:1, Authentication Module:1
+Başlıklar: font-bold, proper hierarchy
+Body text: minimum 12px
+Line-height: 1.5 (body), 1.2 (headings)
+Sayılar için: font-bold, daha büyük
 
-Her biri için recursive olarak tekrar çalışır.
+Color & Contrast:
 
-Her çağrı dönüşünde bir global veya üst dictionary’ye şu şekilde ekleme yapılır:
-toplam_üretimler["Database Layer"] += 1
-toplam_üretimler["API Client Module"] += 1
-toplam_üretimler["Authentication Module"] += 1
+Mor gradient tema koru
+Text contrast: WCAG AA minimum
+Badge'ler: daha canlı, saturated renkler
+Hover: %10-15 daha açık
+Status: yeşil (complete), mavi (progress)
 
-Eğer bir alt bileşenin de alt bileşenleri varsa, onlar da aynı şekilde genişletilir.
+Spacing (4px grid):
 
-Sonuç olarak her şeyin ne kadar üretileceği görünür.
+Card padding: p-3 veya p-4
+Gap between items: gap-3
+Section margins: mb-4, mt-4
+Consistent spacing her yerde
 
-Örnek Sonuç
-Üretim planı: Payment Gateway Module (1 adet)
+Component Polish:
 
-Toplam Üretim Listesi:
-- Payment Gateway Module: 1
-- Database Layer: 1
-- API Client Module: 1
-- Authentication Module: 1
-- Backend Module: 3
-- Network Component: 2
-- Database Component: 2
-- Compression Component: 2
-- Encryption Component: 1
+Border radius: rounded-lg (cards), rounded-full (badges)
+Shadows: subtle default, enhanced hover
+Borders: 1px solid white/10 veya purple/20
+Glassmorphism: backdrop-blur-lg
 
-Yani bu liste tam üretim sırasını gösterir — her ne kadar alt bileşenlerin bir kısmı ham madde olsa da — “bu zincir boyunca neler üretilecek” sorusuna yanıt verir.
+Interactive Elements:
 
+Quantity input'a +/- stepper butonlar ekle
+Production Queue'da "Clear All" butonu ekle
+Search input'ta X (clear) butonu ekle
+Kategori badge'lerinde item sayısı göster: "Module (15)"
+Hover tooltip'ler (opsiyonel, düşük öncelik)
 
+Empty States:
 
-lütfen bu kısıma uyarla bu istediklerimi. kodu optimize et. görüntüyü bozma
-<div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20"><h2 class="text-2xl font-bold text-white mb-4">📋 Üretim Kuyruğu</h2><div class="bg-purple-500/20 border border-purple-500/40 rounded-lg p-4 mb-4"><div class="text-white"><div class="flex justify-between items-center mb-2"><span class="font-semibold">Toplam Süre:</span><span class="text-2xl font-bold">0h</span></div><div class="flex justify-between items-center"><span class="font-semibold">Malzeme Sayısı:</span><span class="text-xl">0</span></div></div></div><div class="space-y-2 max-h-[400px] overflow-y-auto pr-2"><div class="text-center text-gray-400 py-8"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-package mx-auto mb-2 opacity-50"><path d="m7.5 4.27 9 5.15"></path><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg><p>Henüz malzeme eklenmedi</p></div></div><div class="mt-6 border-t border-white/20 pt-4"><h3 class="text-lg font-bold text-white mb-3">📊 Toplam Üretim Özeti</h3><div class="bg-white/5 border border-white/10 rounded-lg p-3"><p class="text-gray-400 text-sm">Henüz üretim yapılmadı</p></div></div></div>
+Center-aligned icon + text
+"Add items to start planning" gibi yardımcı mesaj
+Subtle fade pulse animasyon
+
+Technical Requirements
+
+Tailwind CSS kullan
+React hooks (useState, useMemo)
+CSS transitions (transition-all duration-200)
+localStorage KULLANMA (sadece memory)
+Lucide React icons
+Mevcut fonksiyonaliteyi koru
+Re-render optimizasyonu
+
+Priority Order
+
+Sütun genişlikleri düzelt (1:2:3:2) + 720px max height (İLK ÖNCE BU)
+Scrollbar styling (custom, güzel görünümlü)
+Animasyonlar ve micro-interactions
+Typography ve spacing iyileştirme
+Interactive özellikler (+/- buttons, clear all)

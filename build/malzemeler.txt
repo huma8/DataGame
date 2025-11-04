@@ -7,7 +7,7 @@ UI Element: 6h, Designer(beginner), 1 Blueprint Component + 1 Graphics Component
 UI Set: 18h, Designer(intermediate), 2 Wireframe Component + 2 UI Element
 Responsive UI: 18h, Designer(intermediate), 2 Wireframe Component + 2 UI Element
 Documentation Component: 12h, Designer(expert), -
-Design Guidelines: 90h, Designer(expert), 3 Documentation Component, 3 Responsive UI 
+Design Guidelines: 90h, Designer(expert), 3 Documentation Component + 3 Responsive UI 
 
 UI Component: 2h, Developer(beginner), -
 Backend Component: 4h, Developer(beginner), -
