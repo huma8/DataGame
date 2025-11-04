@@ -115,6 +115,20 @@ const ProductionPlanner = () => {
     });
   }, [searchTerm, selectedCategory]);
 
+  // Memoize category item counts
+  const categoryCounts = useMemo(() => {
+    return {
+      all: items.length,
+      feature: items.filter(item => item.category === 'feature').length,
+      component: items.filter(item => item.category === 'component').length,
+      module: items.filter(item => item.category === 'module').length,
+      designer: items.filter(item => item.type === 'designer').length,
+      developer: items.filter(item => item.type === 'developer').length,
+      lead: items.filter(item => item.type === 'lead').length,
+      sysadmin: items.filter(item => item.type === 'sysadmin').length
+    };
+  }, [items]);
+
   // Find item by name in the items array
   const findItem = (name) => {
     return items.find(item => item.name === name);
@@ -390,14 +404,17 @@ const ProductionPlanner = () => {
   };
 
   // Calculate total time by summing the time for each item in the queue considering their quantities
-  const totalTime = (() => {
-    let total = 0;
-    for (const item of productionQueue) {
+  const totalTime = useMemo(() => {
+    return productionQueue.reduce((total, item) => {
       const quantity = item.quantity || 1;
-      total += toplamUretimSuresi(item.name, quantity);
-    }
-    return total;
-  })();
+      return total + toplamUretimSuresi(item.name, quantity);
+    }, 0);
+  }, [productionQueue]);
+
+  // Calculate unique items count
+  const uniqueItemCount = useMemo(() => {
+    return new Set(productionQueue.map(item => item.name)).size;
+  }, [productionQueue]);
 
   const getWorkerColor = (worker) => {
     if (worker.includes('Designer')) return 'bg-purple-500';
@@ -448,18 +465,7 @@ const ProductionPlanner = () => {
             <div className="flex-1 overflow-y-auto scrollable-element">
               <div className="space-y-1">
                 {['all', 'feature', 'component', 'module', 'designer', 'developer', 'lead', 'sysadmin'].map(cat => {
-                  // Calculate item counts for each category
-                  const itemCount = items.filter(item => {
-                    if (cat === 'all') return true;
-                    if (cat === 'feature') return item.category === 'feature';
-                    if (cat === 'component') return item.category === 'component';
-                    if (cat === 'module') return item.category === 'module';
-                    if (cat === 'designer') return item.type === 'designer';
-                    if (cat === 'developer') return item.type === 'developer';
-                    if (cat === 'lead') return item.type === 'lead';
-                    if (cat === 'sysadmin') return item.type === 'sysadmin';
-                    return false;
-                  }).length;
+                  const itemCount = categoryCounts[cat];
                   
                   return (
                     <button
@@ -492,8 +498,8 @@ const ProductionPlanner = () => {
 
           {/* Column 2: Items List (320px = 2/8) */}
           <div className="lg:w-[320px] flex-shrink-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 h-[720px] flex flex-col">
-            <div className="mb-3 top-0 z-10">
-              <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1.5">
+            <div className="mb-3 sticky top-0 z-10 pb-3">
+              <div className="flex items-center gap-2">
                 <label className="text-m text-gray-300">Quantity:</label>
                 <div className="flex border border-white/20 rounded bg-white/5 flex-1">
                   <button
@@ -578,7 +584,7 @@ const ProductionPlanner = () => {
 
           {/* Column 3: Production Queue (480px = 3/8) */}
           <div className="lg:w-[480px] flex-shrink-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 h-[720px] flex flex-col">
-            <div className="mb-3 top-0 z-10 pb-3">
+            <div className="mb-3 sticky top-0 z-10 pb-3">
               <div className="flex justify-between items-center mb-2">
                 <h2 className="font-bold text-white text-2xl">📋 Production Queue</h2>
                 {productionQueue.length > 0 && (
@@ -604,7 +610,7 @@ const ProductionPlanner = () => {
                   </div>
                   <div>
                     <div className="font-semibold text-sm text-gray-300 mb-1">Unique Items</div>
-                    <div className="font-bold text-2xl">{new Set(productionQueue.map(item => item.name)).size}</div>
+                    <div className="font-bold text-2xl">{uniqueItemCount}</div>
                   </div>
                 </div>
               </div>
@@ -672,10 +678,10 @@ const ProductionPlanner = () => {
 
           {/* Column 4: Production Summary (320px = 2/8) */}
           <div className="lg:w-[320px] flex-shrink-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 h-[720px] flex flex-col">
-            <div className="mb-3 top-0 z-10 pb-3">
+            <div className="mb-3 sticky top-0 z-10 pb-3">
               <h3 className="text-2xl font-bold text-white text-center ">📊 Production Summary</h3>
             </div>
-            <div className="flex-1 overflow-y-auto scrollable-element flex flex-col">
+            <div className="flex-1 overflow-y-auto scrollable-element ">
               {Object.keys(totalProductions).length === 0 ? (
                 <div className="flex-1 flex items-center justify-center">
                   <div className="text-center empty-state-pulse">
