@@ -544,7 +544,7 @@ const ProductionPlanner = () => {
 
         <div className="flex flex-col lg:flex-row gap-4">
           {/* Column 1: Category Sidebar (160px = 1/8) */}
-          <div className="lg:w-[160px] flex-shrink-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 h-[720px] flex flex-col">
+          <div className="w-full lg:w-[160px] flex-shrink-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 h-[720px] min-h-[720px] flex flex-col">
             <div className="mb-4">
               <div className="relative mb-3">
                 <Search className="absolute left-2.5 top-2.5 text-gray-400" size={16} />
@@ -595,13 +595,13 @@ const ProductionPlanner = () => {
                     <button
                       key={cat}
                       onClick={() => setSelectedCategory(cat)}
-                      className={`w-full text-left px-3 py-2 rounded-lg font-medium transition-all text-sm flex justify-between ${
+                      className={`w-full text-left px-3 py-2 rounded-lg font-medium transition-all text-sm flex justify-between truncate ${
                         selectedCategory === cat
                           ? 'bg-purple-500 text-white'
                           : 'bg-white/5 text-gray-300 hover:bg-white/10'
                       }`}
                     >
-                      <span>
+                      <span className="truncate">
                         {cat === 'all' ? 'All' : 
                          cat === 'feature' ? 'Feature' :
                          cat === 'component' ? 'Component' :
@@ -610,7 +610,7 @@ const ProductionPlanner = () => {
                          cat === 'developer' ? 'Developer' :
                          cat === 'lead' ? 'Lead Dev' : 'Sysadmin'}
                       </span>
-                      <span className="bg-purple-500/20 text-purple-200 text-xs px-2 py-0.5 rounded-full min-w-[24px] text-center">
+                      <span className="bg-purple-500/20 text-purple-200 text-xs px-2 py-0.5 rounded-full min-w-[24px] text-center flex-shrink-0 ml-2">
                         {itemCount}
                       </span>
                     </button>
