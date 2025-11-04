@@ -1,30 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Plus, Minus, Trash2, Clock, User, Package, ChevronDown, ChevronUp, X } from 'lucide-react';
-import { initializeData, cikarHammaddeler, cikarToplamUretimler, toplamUretimSuresi, uretimZinciri } from './uretim-hesaplama.js';
+import { cikarHammaddeler, cikarToplamUretimler, toplamUretimSuresi, uretimZinciri } from '../../utils/uretim-hesaplama.js';
+import appConfig from '../../config/appConfig.js';
+import { WORKER_TYPES, ITEM_CATEGORIES, WORKER_LEVELS, COLORS, UI } from '../../config/constants.js';
+import DataService from '../../utils/dataService.js';
 
 // Title easter egg options
-const TITLE_OPTIONS = [
-  "Miss me?",
-  "Still here?",
-  "Come back soon!",
-  "Where did you go?",
-  "Don't leave me!",
-  "Please return!",
-  "Can't live without you",
-  "Hurry back!",
-  "Time is ticking...",
-  "Still producing?",
-  "Don't forget me!",
-  "Waiting for you...",
-  "Come back!",
-  "Don't abandon me!",
-  "I miss you!",
-  "Return to production!",
-  "Still here!",
-  "Miss you...",
-  "Where are you?",
-  "Come back to me!"
-];
+const TITLE_OPTIONS = appConfig.easterEggMessages;
 
 const ProductionPlanner = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -43,15 +25,14 @@ const ProductionPlanner = () => {
 
   // Initialize the production data when the component mounts
   useEffect(() => {
-    fetch('/malzemeler.txt')
-      .then(response => response.text())
-      .then(text => {
-        initializeData(text);
-        setIsLoading(false); // Set loading to false after data is loaded
-      })
-      .catch(error => {
-        console.error('Error loading malzemeler.txt:', error);
-        setIsLoading(false); // Still set loading to false in case of error
+    DataService.loadProductionData()
+      .then(result => {
+        if (result.success) {
+          setIsLoading(false); // Set loading to false after data is loaded
+        } else {
+          console.error('Error loading production data:', result.error);
+          setIsLoading(false); // Still set loading to false in case of error
+        }
       });
   }, []);
 
@@ -521,17 +502,17 @@ const ProductionPlanner = () => {
   }, [productionQueue]);
 
   const getWorkerColor = (worker) => {
-    if (worker.includes('Designer')) return 'bg-purple-500';
-    if (worker.includes('Lead Developer')) return 'bg-orange-500';
-    if (worker.includes('Sysadmin')) return 'bg-red-500';
-    if (worker.includes('Feature')) return 'bg-yellow-500';
-    return 'bg-blue-500';
+    if (worker.includes('Designer')) return COLORS.DESIGNER;
+    if (worker.includes('Lead Developer')) return COLORS.LEAD_DEVELOPER;
+    if (worker.includes('Sysadmin')) return COLORS.SYSADMIN;
+    if (worker.includes('Feature')) return COLORS.FEATURE;
+    return COLORS.DEFAULT;
   };
 
   const getCategoryBadge = (item) => {
-    if (item.category === 'module') return 'bg-green-100 text-green-800';
-    if (item.category === 'feature') return 'bg-yellow-100 text-yellow-800';
-    return 'bg-blue-100 text-blue-800';
+    if (item.category === ITEM_CATEGORIES.MODULE) return UI.CATEGORY_BADGES.MODULE;
+    if (item.category === ITEM_CATEGORIES.FEATURE) return UI.CATEGORY_BADGES.FEATURE;
+    return UI.CATEGORY_BADGES.DEFAULT;
   };
 
   return (

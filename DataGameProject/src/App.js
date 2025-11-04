@@ -1,5 +1,5 @@
 import React from 'react';
-import ProductionPlanner from './ProductionPlanner';
+import ProductionPlanner from './components/production/ProductionPlanner';
 
 function App() {
   return (
