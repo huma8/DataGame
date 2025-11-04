@@ -154,11 +154,26 @@ const ProductionPlanner = () => {
   };
 
   const addToQueue = (item, qty = 1) => {
-    const newItems = [];
-    for (let i = 0; i < qty; i++) {
-      newItems.push({ ...item, id: Date.now() + i });
+    // Check if item with the same name already exists in the queue
+    const existingItemIndex = productionQueue.findIndex(qItem => qItem.name === item.name);
+    
+    let updatedQueue;
+    
+    if (existingItemIndex !== -1) {
+      // If item already exists, update its quantity
+      updatedQueue = [...productionQueue];
+      const existingItem = updatedQueue[existingItemIndex];
+      updatedQueue[existingItemIndex] = {
+        ...existingItem,
+        quantity: (existingItem.quantity || 1) + qty
+      };
+    } else {
+      // If item doesn't exist, add it as a new item with quantity
+      const itemToAdd = { ...item, id: Date.now(), quantity: qty };
+      updatedQueue = [...productionQueue, itemToAdd];
     }
-    setProductionQueue([...productionQueue, ...newItems]);
+    
+    setProductionQueue(updatedQueue);
     
     // Update total production with all required resources calculated recursively
     setTotalProductions(prev => {
@@ -204,57 +219,73 @@ const ProductionPlanner = () => {
   };
 
   const removeFromQueue = (id) => {
-    const removedItem = productionQueue.find(item => item.id === id);
-    if (removedItem) {
-      // Update the queue by filtering out the removed item
-      const updatedQueue = productionQueue.filter(item => item.id !== id);
-      setProductionQueue(updatedQueue);
+    // Find item in queue by id
+    const itemIndex = productionQueue.findIndex(item => item.id === id);
+    if (itemIndex === -1) return;
+    
+    const item = productionQueue[itemIndex];
+    const updatedQueue = [...productionQueue];
+    
+    // If the item has a count > 1, decrease the count by 1
+    if ((item.quantity || 1) > 1) {
+      // Update the quantity of the existing item
+      updatedQueue[itemIndex] = {
+        ...item,
+        quantity: item.quantity - 1
+      };
+    } else {
+      // Remove the item from the queue if quantity is 1
+      updatedQueue.splice(itemIndex, 1);
+    }
+    
+    setProductionQueue(updatedQueue);
+    
+    // Update total production by subtracting one instance of the item and all its sub-resources
+    setTotalProductions(prev => {
+      const updated = { ...prev };
       
-      // Update total production by subtracting the removed item and all its sub-resources
-      setTotalProductions(prev => {
-        const updated = { ...prev };
-        
-        // Use the new calculation function from uretim-hesaplama.js
-        const allResources = cikarToplamUretimler(removedItem.name, 1);
-        
-        // Subtract all resources from the total
-        for (const [resourceName, count] of Object.entries(allResources)) {
-          if (updated[resourceName]) {
-            updated[resourceName] = Math.max(0, updated[resourceName] - count);
-            if (updated[resourceName] === 0) {
-              delete updated[resourceName];
-            }
+      // Use the new calculation function from uretim-hesaplama.js
+      const allResources = cikarToplamUretimler(item.name, 1);
+      
+      // Subtract all resources from the total
+      for (const [resourceName, count] of Object.entries(allResources)) {
+        if (updated[resourceName]) {
+          updated[resourceName] = Math.max(0, updated[resourceName] - count);
+          if (updated[resourceName] === 0) {
+            delete updated[resourceName];
           }
         }
-        
-        return updated;
-      });
+      }
       
-      // Update production details by recalculating based on the current queue
-      setProductionDetails(prev => {
-        const updated = {};
-        const itemCounts = {};
-        
-        // Count occurrences of each item in the current queue
-        for (const item of updatedQueue) {
-          itemCounts[item.name] = (itemCounts[item.name] || 0) + 1;
-        }
-        
-        // Recalculate details for each unique item in the queue
-        for (const [itemName, count] of Object.entries(itemCounts)) {
-          updated[itemName] = {
-            totalTime: toplamUretimSuresi(itemName, count),
-            rawMaterials: cikarHammaddeler(itemName, count),
-            productionChain: uretimZinciri(itemName)
-          };
-        }
-        
-        return updated;
-      });
+      return updated;
+    });
+    
+    // Update production details by recalculating based on the current queue
+    setProductionDetails(prev => {
+      const updated = {};
+      const itemCounts = {};
       
-      // Update detailed breakdown by recalculating from the current production queue
-      setDetailedBreakdown(calculateAllBreakdowns());
-    }
+      // Count occurrences of each item in the current queue
+      for (const queueItem of updatedQueue) {
+        const name = queueItem.name;
+        const quantity = queueItem.quantity || 1;
+        itemCounts[name] = (itemCounts[name] || 0) + quantity;
+      }
+      
+      // Recalculate details for each unique item in the queue
+      for (const [itemName, count] of Object.entries(itemCounts)) {
+        updated[itemName] = {
+          totalTime: toplamUretimSuresi(itemName, count),
+          rawMaterials: cikarHammaddeler(itemName, count),
+          productionChain: uretimZinciri(itemName)
+        };
+      }
+      
+      return updated;
+    });
+    
+    // Update detailed breakdown by recalculating from the current production queue
+    setDetailedBreakdown(calculateAllBreakdowns());
   };
   
   // Helper function to aggregate raw materials
@@ -373,12 +404,12 @@ const ProductionPlanner = () => {
           </div>
 
           {/* Main Content - Item List */}
-          <div className="flex-1 min-w-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
+          <div className="lg:w-2/5 flex-1 min-w-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20">
             <div className="space-y-2 max-h-[calc(100vh-200px)] overflow-y-auto pr-2 scrollable-element">
               {filteredItems.map((item, idx) => (
                 <div
                   key={idx}
-                  className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-all cursor-pointer card-hover-effect stagger-item"
+                  className="bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 transition-all cursor-pointer card-hover-effect stagger-item"
                   style={{ animationDelay: `${idx * 0.02}s` }}
                   onClick={() => addToQueue(item, 1)}
                 >
@@ -432,109 +463,118 @@ const ProductionPlanner = () => {
             </div>
           </div>
 
-          {/* Right Panel - Production Queue and Summary */}
-          <div className="flex flex-col gap-6 min-w-[360px] w-[360px] flex-shrink-0">
-            {/* Production Queue */}
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 h-[340px] flex flex-col">
-              <h2 className="text-2xl font-bold text-white mb-4">📋 Production Queue</h2>
-              
-              <div className="bg-purple-500/20 border border-purple-500/40 rounded-lg p-4 mb-4 flex-shrink-0">
-                <div className="text-white">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-semibold text-base">Total Time:</span>
-                    <span className="text-xl font-bold">{totalTime}h</span>
+          {/* Right Panel - Production Queue and Summary side by side */}
+          <div className="flex flex-col gap-6 min-w-[600px] w-[600px] flex-shrink-0">
+            <div className="flex flex-row gap-6 h-[340px]">
+              {/* Production Queue */}
+              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-5 border border-white/20 flex-1 flex flex-col">
+                <h2 className="text-xl font-bold text-white mb-3">📋 Production Queue</h2>
+                
+                <div className="bg-purple-500/20 border border-purple-500/40 rounded-lg p-3 mb-3 flex-shrink-0">
+                  <div className="text-white">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-semibold text-sm">Total Time:</span>
+                      <span className="text-xl font-bold">{totalTime}h</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold text-sm">Unique Items:</span>
+                      <span className="text-base">{new Set(productionQueue.map(item => item.name)).size}</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-base">Item Count:</span>
-                    <span className="text-lg">{productionQueue.length}</span>
-                  </div>
+                </div>
+
+                <div className="space-y-2 flex-1 min-h-0 overflow-y-auto pr-2 scrollable-element">
+                  {productionQueue.length === 0 ? (
+                    <div className="text-center text-gray-400 py-6 flex items-center justify-center h-full">
+                      <div>
+                        <Package size={40} className="mx-auto mb-2 opacity-50" />
+                        <p className="text-base">No items added yet</p>
+                      </div>
+                    </div>
+                  ) : (
+                    productionQueue.map((item) => (
+                      <div
+                        key={item.id}
+                        className="bg-white/5 border border-white/10 rounded-lg p-3 hover:bg-white/10 transition-all card-hover-effect"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-lg">{item.icon}</span>
+                              <h4 className="text-white font-medium text-sm truncate">{item.name}</h4>
+                              {(item.quantity || 1) > 1 && (
+                                <span className="bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
+                                  {item.quantity || 1}x
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex gap-2 text-sm">
+                              <span className="text-purple-300">{item.time}h</span>
+                              <span className={`px-1.5 py-0.5 rounded text-white text-xs ${getWorkerColor(item.worker)}`}>
+                                {item.worker.split('(')[0]}
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => removeFromQueue(item.id)}
+                            className="p-1.5 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all ml-2 flex-shrink-0"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
-              <div className="space-y-3 flex-1 min-h-0 overflow-y-auto pr-2 scrollable-element">
-                {productionQueue.length === 0 ? (
-                  <div className="text-center text-gray-400 py-8">
-                    <Package size={48} className="mx-auto mb-2 opacity-50" />
-                    <p className="text-lg">No items added yet</p>
-                  </div>
-                ) : (
-                  productionQueue.map((item) => (
-                    <div
-                      key={item.id}
-                      className="bg-white/5 border border-white/10 rounded-lg p-4 hover:bg-white/10 transition-all card-hover-effect"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xl">{item.icon}</span>
-                            <h4 className="text-white font-medium text-lg truncate">{item.name}</h4>
-                          </div>
-                          <div className="flex gap-3 text-base">
-                            <span className="text-purple-300">{item.time}h</span>
-                            <span className={`px-2 py-1 rounded text-white text-sm ${getWorkerColor(item.worker)}`}>
-                              {item.worker.split('(')[0]}
-                            </span>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => removeFromQueue(item.id)}
-                          className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all ml-2"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* Total Production Summary */}
-            <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20 h-[340px] flex flex-col">
-              <h3 className="text-xl font-bold text-white mb-3">📊 Production Summary</h3>
-              <div className="bg-white/5 border border-white/10 rounded-lg p-4 flex-1 min-h-0 overflow-y-auto scrollable-element">
-                {Object.keys(totalProductions).length === 0 ? (
-                  <p className="text-gray-400 text-lg">No production yet</p>
-                ) : (
-                  <div className="space-y-3">
-                    <h4 className="font-semibold text-white text-lg">Total Production:</h4>
+              {/* Total Production Summary */}
+              <div className="bg-white/10 backdrop-blur-lg rounded-xl p-5 border border-white/20 flex-1 flex flex-col">
+                <h3 className="text-lg font-bold text-white mb-2">📊 Production Summary</h3>
+                <div className="bg-white/5 border border-white/10 rounded-lg p-3 flex-1 min-h-0 overflow-y-auto scrollable-element">
+                  {Object.keys(totalProductions).length === 0 ? (
+                    <p className="text-gray-400 text-base pt-6 text-center">No production yet</p>
+                  ) : (
                     <div className="space-y-2">
-                      {Object.entries(totalProductions).map(([item, count]) => (
-                        <div key={item} className="flex justify-between text-lg">
-                          <span className="text-gray-300 truncate flex-1 mr-2">{item}:</span>
-                          <span className="text-white font-medium flex-shrink-0">{count}</span>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    <div className="border-t border-white/20 pt-3 mt-3">
-                      <div className="flex justify-between font-bold text-white text-lg">
-                        <span>Total Items:</span>
-                        <span>{Object.values(totalProductions).reduce((sum, count) => sum + count, 0)}</span>
-                      </div>
-                    </div>
-                    
-                    {/* Additional Production Details */}
-                    <div className="border-t border-white/20 pt-3 mt-3">
-                      <h4 className="font-semibold text-white text-lg">Production Details:</h4>
-                      <div className="space-y-2 mt-2">
-                        {Object.entries(productionDetails).map(([itemName, details]) => (
-                          <div key={itemName} className="mt-3">
-                            <div className="text-base text-purple-300 font-semibold truncate">{itemName}</div>
-                            <div className="text-base text-gray-300">Total Time: <span className="text-white">{details.totalTime} hours</span></div>
-                            <div className="text-base text-gray-300">Raw Materials:</div>
-                            <div className="text-base text-gray-400 ml-3">
-                              {Object.entries(details.rawMaterials).map(([material, count], idx) => (
-                                <div key={idx} className="truncate">{material}: {count}</div>
-                              ))}
-                            </div>
-                            <div className="text-base text-gray-300">Production Chain: <span className="text-white">{details.productionChain.join(' → ')}</span></div>
+                      <h4 className="font-semibold text-white text-sm">Total Production:</h4>
+                      <div className="space-y-1">
+                        {Object.entries(totalProductions).map(([item, count]) => (
+                          <div key={item} className="flex justify-between text-sm">
+                            <span className="text-gray-300 truncate flex-1 mr-2">{item}:</span>
+                            <span className="text-white font-medium flex-shrink-0">{count}</span>
                           </div>
                         ))}
                       </div>
+                      
+                      <div className="border-t border-white/20 pt-2 mt-2">
+                        <div className="flex justify-between font-bold text-white text-sm">
+                          <span>Total Items:</span>
+                          <span>{Object.values(totalProductions).reduce((sum, count) => sum + count, 0)}</span>
+                        </div>
+                      </div>
+                      
+                      {/* Additional Production Details */}
+                      <div className="border-t border-white/20 pt-2 mt-2">
+                        <h4 className="font-semibold text-white text-sm">Production Details:</h4>
+                        <div className="space-y-1 mt-1">
+                          {Object.entries(productionDetails).map(([itemName, details]) => (
+                            <div key={itemName} className="mt-2">
+                              <div className="text-xs text-purple-300 font-semibold truncate">{itemName}</div>
+                              <div className="text-xs text-gray-300">Total Time: <span className="text-white">{details.totalTime} hours</span></div>
+                              <div className="text-xs text-gray-300">Raw Materials:</div>
+                              <div className="text-xs text-gray-400 ml-2">
+                                {Object.entries(details.rawMaterials).map(([material, count], idx) => (
+                                  <div key={idx} className="truncate">{material}: {count}</div>
+                                ))}
+                              </div>
+                              <div className="text-xs text-gray-300">Production Chain: <span className="text-white">{details.productionChain.join(' → ')}</span></div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>
