@@ -5,7 +5,6 @@ DataGame is a React-based production planning application that simulates a start
 
 ## Project Structure
 - `build/` - Production build output
-- `pics/` - Image assets (contains UI mockups: image.png, image copy.png, image copy 2.png, image copy 3.png)
 - `public/` - Public assets (not shown in current listing)
 - `src/` - Source code files
   - `App.js` - Main application component
@@ -65,9 +64,3 @@ Recent changes made to the UI include:
 - Responsive design with flexbox and Tailwind utility classes
 - Consistent use of backdrop blur effects and glassmorphism
 - Minimum readable font sizes with overrides for accessibility
-
-## Image Processing
-The project includes an image processing script (`process_images.js`) that can:
-- Soften purple/magenta areas in the first 3 images in the pics folder
-- Adjust `image copy 3.png` to fill available space properly
-- Requires ImageMagick to be installed on the system

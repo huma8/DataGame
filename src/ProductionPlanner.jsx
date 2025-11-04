@@ -36,6 +36,10 @@ const ProductionPlanner = () => {
   const [productionDetails, setProductionDetails] = useState({});
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [searchOptions, setSearchOptions] = useState({
+    exactMatch: false,
+    caseSensitive: false
+  });
 
   // Initialize the production data when the component mounts
   useEffect(() => {
@@ -151,19 +155,69 @@ const ProductionPlanner = () => {
   ];
 
   const filteredItems = useMemo(() => {
-    return items.filter(item => {
-      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || 
-                             (selectedCategory === 'feature' && item.category === 'feature') ||
-                             (selectedCategory === 'component' && item.category === 'component') ||
-                             (selectedCategory === 'module' && item.category === 'module') ||
-                             (selectedCategory === 'designer' && item.type === 'designer') ||
-                             (selectedCategory === 'developer' && item.type === 'developer') ||
-                             (selectedCategory === 'lead' && item.type === 'lead') ||
-                             (selectedCategory === 'sysadmin' && item.type === 'sysadmin');
-      return matchesSearch && matchesCategory;
-    });
-  }, [searchTerm, selectedCategory]);
+    // Preprocess items if search term is not empty and not using exact match for performance
+    if (searchTerm && !searchOptions.exactMatch && !searchOptions.caseSensitive) {
+      // Create a search index if it doesn't exist
+      if (!window.searchIndex) {
+        window.searchIndex = items.map(item => ({
+          ...item,
+          lowerName: item.name.toLowerCase(),
+          lowerWorker: item.worker.toLowerCase(),
+          lowerCategory: item.category.toLowerCase()
+        }));
+      }
+      
+      return window.searchIndex.filter(item => {
+        const matchesSearch = item.lowerName.includes(searchTerm.toLowerCase()) || 
+                             item.lowerWorker.includes(searchTerm.toLowerCase()) || 
+                             item.lowerCategory.includes(searchTerm.toLowerCase());
+        
+        const matchesCategory = selectedCategory === 'all' || 
+                               (selectedCategory === 'feature' && item.category === 'feature') ||
+                               (selectedCategory === 'component' && item.category === 'component') ||
+                               (selectedCategory === 'module' && item.category === 'module') ||
+                               (selectedCategory === 'designer' && item.type === 'designer') ||
+                               (selectedCategory === 'developer' && item.type === 'developer') ||
+                               (selectedCategory === 'lead' && item.type === 'lead') ||
+                               (selectedCategory === 'sysadmin' && item.type === 'sysadmin');
+        return matchesSearch && matchesCategory;
+      });
+    } else {
+      // For exact match or case-sensitive searches, use the original filtering
+      return items.filter(item => {
+        let matchesSearch = false;
+        
+        if (searchTerm === '') {
+          matchesSearch = true;
+        } else {
+          const searchValue = searchOptions.caseSensitive ? searchTerm : searchTerm.toLowerCase();
+          const itemName = searchOptions.caseSensitive ? item.name : item.name.toLowerCase();
+          const itemWorker = searchOptions.caseSensitive ? item.worker : item.worker.toLowerCase();
+          const itemCategory = searchOptions.caseSensitive ? item.category : item.category.toLowerCase();
+          
+          if (searchOptions.exactMatch) {
+            matchesSearch = itemName === searchValue || 
+                           itemWorker === searchValue || 
+                           itemCategory === searchValue;
+          } else {
+            matchesSearch = itemName.includes(searchValue) || 
+                           itemWorker.includes(searchValue) || 
+                           itemCategory.includes(searchValue);
+          }
+        }
+        
+        const matchesCategory = selectedCategory === 'all' || 
+                               (selectedCategory === 'feature' && item.category === 'feature') ||
+                               (selectedCategory === 'component' && item.category === 'component') ||
+                               (selectedCategory === 'module' && item.category === 'module') ||
+                               (selectedCategory === 'designer' && item.type === 'designer') ||
+                               (selectedCategory === 'developer' && item.type === 'developer') ||
+                               (selectedCategory === 'lead' && item.type === 'lead') ||
+                               (selectedCategory === 'sysadmin' && item.type === 'sysadmin');
+        return matchesSearch && matchesCategory;
+      });
+    }
+  }, [searchTerm, selectedCategory, searchOptions]);
 
   // Memoize category item counts
   const categoryCounts = useMemo(() => {
@@ -510,6 +564,26 @@ const ProductionPlanner = () => {
                   </button>
                 )}
               </div>
+              <div className="flex flex-wrap gap-2 mb-2">
+                <label className="flex items-center gap-1 text-xs text-gray-400">
+                  <input
+                    type="checkbox"
+                    checked={searchOptions.exactMatch}
+                    onChange={(e) => setSearchOptions(prev => ({ ...prev, exactMatch: e.target.checked }))}
+                    className="rounded"
+                  />
+                  Exact match
+                </label>
+                <label className="flex items-center gap-1 text-xs text-gray-400">
+                  <input
+                    type="checkbox"
+                    checked={searchOptions.caseSensitive}
+                    onChange={(e) => setSearchOptions(prev => ({ ...prev, caseSensitive: e.target.checked }))}
+                    className="rounded"
+                  />
+                  Case sensitive
+                </label>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto scrollable-element">
@@ -586,9 +660,30 @@ const ProductionPlanner = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="text-2xl">{item.icon}</span>
-                        <h3 className="text-white font-semibold text-sm truncate">{item.name}</h3>
+                        <h3 className="text-white font-semibold text-sm truncate">
+                          {searchTerm && !searchOptions.exactMatch ? (
+                            <>
+                              {item.name.split(new RegExp(`(${searchTerm})`, searchOptions.caseSensitive ? 'g' : 'gi')).map((part, index) => 
+                                searchOptions.caseSensitive 
+                                  ? (part === searchTerm ? <span key={index} className="bg-yellow-500/30 text-yellow-100">{part}</span> : part)
+                                  : (part.toLowerCase() === searchTerm.toLowerCase() ? <span key={index} className="bg-yellow-500/30 text-yellow-100">{part}</span> : part)
+                              )}
+                            </>
+                          ) : item.name}
+                        </h3>
                         <span className={`text-xs min-readable px-2 py-1 rounded ${getCategoryBadge(item)}`}>
-                          {item.category}
+                          {searchTerm && !searchOptions.exactMatch && 
+                           (searchOptions.caseSensitive 
+                            ? item.category.includes(searchTerm)
+                            : item.category.toLowerCase().includes(searchTerm.toLowerCase())) ? (
+                            <>
+                              {item.category.split(new RegExp(`(${searchTerm})`, searchOptions.caseSensitive ? 'g' : 'gi')).map((part, index) => 
+                                searchOptions.caseSensitive 
+                                  ? (part === searchTerm ? <span key={index} className="bg-yellow-500/30 text-yellow-100">{part}</span> : part)
+                                  : (part.toLowerCase() === searchTerm.toLowerCase() ? <span key={index} className="bg-yellow-500/30 text-yellow-100">{part}</span> : part)
+                              )}
+                            </>
+                          ) : item.category}
                         </span>
                       </div>
                       <div className="flex gap-3 text-xs mb-2">
@@ -598,7 +693,17 @@ const ProductionPlanner = () => {
                         </div>
                         <div className="flex items-center gap-1 text-blue-300">
                           <User size={12} />
-                          <span className="truncate max-w-[120px]">{item.worker}</span>
+                          <span className="truncate max-w-[120px]">
+                            {searchTerm && !searchOptions.exactMatch ? (
+                              <>
+                                {item.worker.split(new RegExp(`(${searchTerm})`, searchOptions.caseSensitive ? 'g' : 'gi')).map((part, index) => 
+                                  searchOptions.caseSensitive 
+                                    ? (part === searchTerm ? <span key={index} className="bg-yellow-500/30 text-yellow-100">{part}</span> : part)
+                                    : (part.toLowerCase() === searchTerm.toLowerCase() ? <span key={index} className="bg-yellow-500/30 text-yellow-100">{part}</span> : part)
+                                )}
+                              </>
+                            ) : item.worker}
+                          </span>
                         </div>
                       </div>
                       {item.resources.length > 0 && (
