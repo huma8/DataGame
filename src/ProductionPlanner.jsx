@@ -2,6 +2,30 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Plus, Minus, Trash2, Clock, User, Package, ChevronDown, ChevronUp, X } from 'lucide-react';
 import { initializeData, cikarHammaddeler, cikarToplamUretimler, toplamUretimSuresi, uretimZinciri } from './uretim-hesaplama.js';
 
+// Title easter egg options
+const TITLE_OPTIONS = [
+  "Miss me?",
+  "Still here?",
+  "Come back soon!",
+  "Where did you go?",
+  "Don't leave me!",
+  "Please return!",
+  "Can't live without you",
+  "Hurry back!",
+  "Time is ticking...",
+  "Still producing?",
+  "Don't forget me!",
+  "Waiting for you...",
+  "Come back!",
+  "Don't abandon me!",
+  "I miss you!",
+  "Return to production!",
+  "Still here!",
+  "Miss you...",
+  "Where are you?",
+  "Come back to me!"
+];
+
 const ProductionPlanner = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -25,6 +49,32 @@ const ProductionPlanner = () => {
         console.error('Error loading malzemeler.txt:', error);
         setIsLoading(false); // Still set loading to false in case of error
       });
+  }, []);
+
+  // Title easter egg functionality
+  useEffect(() => {
+    let currentInactiveMessage = null;
+    
+    // Handle tab visibility changes
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // When tab becomes hidden, select and show a random easter egg message
+        const randomIndex = Math.floor(Math.random() * TITLE_OPTIONS.length);
+        currentInactiveMessage = TITLE_OPTIONS[randomIndex];
+        document.title = currentInactiveMessage;
+      } else {
+        // When tab becomes visible again, show default title
+        document.title = 'Startup Company Production Planner';
+      }
+    };
+
+    // Set up the event listener for visibility changes
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Clean up on unmount
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   const items = [
