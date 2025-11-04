@@ -383,7 +383,7 @@ const ProductionPlanner = () => {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-1 scrollable-element">
+            <div className="flex-1 overflow-y-auto scrollable-element">
               <div className="space-y-1">
                 {['all', 'feature', 'component', 'module', 'designer', 'developer', 'lead', 'sysadmin'].map(cat => {
                   // Calculate item counts for each category
@@ -430,29 +430,9 @@ const ProductionPlanner = () => {
 
           {/* Column 2: Items List (320px = 2/8) */}
           <div className="lg:w-[320px] flex-shrink-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 h-[720px] flex flex-col">
-            <div className="mb-3 sticky top-0 bg-white/10 z-10 pb-3">
-              <div className="flex gap-2 mb-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-2.5 text-gray-400" size={14} />
-                  <input
-                    type="text"
-                    placeholder="Search items..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-8 pr-8 py-1.5 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
-                  />
-                  {searchTerm && (
-                    <button
-                      onClick={() => setSearchTerm('')}
-                      className="absolute right-2 top-2 text-gray-400 hover:text-white"
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-xs text-gray-300">Quantity:</label>
+            <div className="mb-3 top-0 z-10">
+              <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1.5">
+                <label className="text-m text-gray-300">Quantity:</label>
                 <div className="flex border border-white/20 rounded bg-white/5 flex-1">
                   <button
                     onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
@@ -476,7 +456,7 @@ const ProductionPlanner = () => {
                 </div>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto pr-2 scrollable-element">
+            <div className="flex-1 overflow-y-auto scrollable-element">
               {filteredItems.map((item, idx) => (
                 <div
                   key={idx}
@@ -536,9 +516,9 @@ const ProductionPlanner = () => {
 
           {/* Column 3: Production Queue (480px = 3/8) */}
           <div className="lg:w-[480px] flex-shrink-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 h-[720px] flex flex-col">
-            <div className="mb-3 sticky top-0 bg-white/10 z-10 pb-3">
+            <div className="mb-3 top-0 z-10 pb-3">
               <div className="flex justify-between items-center mb-2">
-                <h2 className="text-lg font-bold text-white">📋 Production Queue</h2>
+                <h2 className="font-bold text-white text-2xl">📋 Production Queue</h2>
                 {productionQueue.length > 0 && (
                   <button
                     onClick={() => {
@@ -554,21 +534,21 @@ const ProductionPlanner = () => {
                 )}
               </div>
               
-              <div className="bg-purple-500/20 border border-purple-500/40 rounded-lg p-2">
-                <div className="text-white">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-semibold">Total Time:</span>
-                    <span className="font-bold">{totalTime}h</span>
+              <div className="bg-purple-500/20 border border-purple-500/40 rounded-lg p-4">
+                <div className="text-white text-center">
+                  <div className="mb-3">
+                    <div className="font-semibold text-sm text-gray-300 mb-1">Total Time</div>
+                    <div className="font-bold text-2xl">{totalTime}h</div>
                   </div>
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-semibold">Unique Items:</span>
-                    <span>{new Set(productionQueue.map(item => item.name)).size}</span>
+                  <div>
+                    <div className="font-semibold text-sm text-gray-300 mb-1">Unique Items</div>
+                    <div className="font-bold text-2xl">{new Set(productionQueue.map(item => item.name)).size}</div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto pr-2 scrollable-element">
+            <div className="flex-1 overflow-y-auto scrollable-element">
               {productionQueue.length === 0 ? (
                 <div className="text-center text-gray-400 py-10 flex items-center justify-center h-full">
                   <div className="text-center empty-state-pulse">
@@ -630,23 +610,23 @@ const ProductionPlanner = () => {
 
           {/* Column 4: Production Summary (320px = 2/8) */}
           <div className="lg:w-[320px] flex-shrink-0 bg-white/10 backdrop-blur-lg rounded-xl p-4 border border-white/20 h-[720px] flex flex-col">
-            <div className="mb-3 sticky top-0 bg-white/10 z-10 pb-3">
-              <h3 className="text-lg font-bold text-white">📊 Production Summary</h3>
+            <div className="mb-3 top-0 z-10 pb-3">
+              <h3 className="text-2xl font-bold text-white text-center ">📊 Production Summary</h3>
             </div>
-            <div className="flex-1 overflow-y-auto pr-2 scrollable-element">
+            <div className="flex-1 overflow-y-auto scrollable-element flex flex-col">
               {Object.keys(totalProductions).length === 0 ? (
-                <div className="text-center text-gray-400 py-10 flex items-center justify-center h-full">
+                <div className="flex-1 flex items-center justify-center">
                   <div className="text-center empty-state-pulse">
                     <Package size={40} className="mx-auto mb-2 opacity-50 text-gray-500" />
-                    <p className="text-sm">No production yet</p>
+                    <p className="text-sm text-gray-400">No production yet</p>
                     <p className="text-xs text-gray-500 mt-1">Add items to the queue to see summary</p>
                   </div>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                <div className="flex-1 flex flex-col space-y-4 min-h-0">
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-3 flex-shrink-0">
                     <h4 className="font-semibold text-white text-sm mb-2">Total Production:</h4>
-                    <div className="space-y-1 max-h-40 overflow-y-auto">
+                    <div className="space-y-1 max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-transparent">
                       {Object.entries(totalProductions).map(([item, count]) => (
                         <div key={item} className="flex justify-between text-xs">
                           <span className="text-gray-300 truncate flex-1 mr-2">{item}:</span>
@@ -654,7 +634,6 @@ const ProductionPlanner = () => {
                         </div>
                       ))}
                     </div>
-                    
                     <div className="border-t border-white/20 pt-2 mt-2">
                       <div className="flex justify-between font-bold text-white text-sm">
                         <span>Total Items:</span>
@@ -662,11 +641,10 @@ const ProductionPlanner = () => {
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Additional Production Details */}
-                  <div className="bg-white/5 border border-white/10 rounded-lg p-3">
-                    <h4 className="font-semibold text-white text-sm mb-2">Production Details:</h4>
-                    <div className="space-y-2 max-h-64 overflow-y-auto">
+
+                  <div className="bg-white/5 border border-white/10 rounded-lg p-3 flex-1 flex flex-col min-h-0">
+                    <h4 className="font-semibold text-white text-sm mb-2 flex-shrink-0">Production Details:</h4>
+                    <div className="space-y-2 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-transparent">
                       {Object.entries(productionDetails).map(([itemName, details]) => (
                         <div key={itemName} className="pt-2 border-t border-white/10 first:border-t-0 first:pt-0">
                           <div className="text-xs text-purple-300 font-semibold truncate">{itemName}</div>
